@@ -1,19 +1,20 @@
 package com.vackosar.gitflowincrementalbuild.mocks;
 
-import com.vackosar.gitflowincrementalbuild.control.Property;
+import java.io.*;
+
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import com.vackosar.gitflowincrementalbuild.control.Property;
 
 public abstract class RepoTest {
 
     protected LocalRepoMock localRepoMock;
     public StaticLoggerBinder staticLoggerBinder;
     protected ByteArrayOutputStream consoleOut;
+    protected String pluginVersion;
     private final PrintStream normalOut;
 
     public RepoTest() {
@@ -24,6 +25,7 @@ public abstract class RepoTest {
     public void before() throws Exception {
         init();
         localRepoMock = new LocalRepoMock(false);
+        pluginVersion = getPluginVersion();
     }
 
     protected void init() {
@@ -42,12 +44,16 @@ public abstract class RepoTest {
     }
 
     private void resetProperties() {
-        for (Property property: Property.values()) {
+        for (Property property : Property.values()) {
             property.setValue(property.defaultValue);
         }
         Property.uncommited.setValue("false");
         Property.referenceBranch.setValue("refs/heads/develop");
         Property.compareToMergeBase.setValue("false");
+    }
+
+    private String getPluginVersion() throws IOException {
+        return System.getProperty("projectVersion");
     }
 
     @After

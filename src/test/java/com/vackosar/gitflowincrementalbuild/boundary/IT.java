@@ -1,16 +1,15 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
 import com.vackosar.gitflowincrementalbuild.control.Property;
+import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
 import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +19,18 @@ import java.util.stream.Stream;
 public class IT extends RepoTest {
 
     @Test
+    public void buildDisabled() throws Exception {
+        String output = executeBuild(Collections.singletonList(
+                        "-Dgib." + Property.enabled + "=false"));
+        System.out.println(output);
+        Assert.assertTrue(output.contains("gitflow-incremental-builder is disabled."));
+    }
+
+    @Test
     public void buildAllSkipTest() throws Exception {
         final String output = executeBuild(Arrays.asList(
-                "-Dgib." + Property.buildAll + "=true",
-                "-Dgib." + Property.skipTestsForNotImpactedModules.name() + "=true")
-        );
+                        "-Dgib." + Property.buildAll + "=true",
+                        "-Dgib." + Property.skipTestsForNotImpactedModules.name() + "=true"));
         System.out.println(output);
 
         Assert.assertTrue(output.contains(" child1"));
@@ -38,7 +44,7 @@ public class IT extends RepoTest {
         Assert.assertTrue(output.contains(" child6"));
         Assert.assertTrue(output.contains("[INFO] Tests are skipped."));
     }
-    
+
     @Test
     public void buildWithAlsoMake() throws Exception {
         final String output = executeBuild(Collections.singletonList("-am"));
@@ -61,7 +67,8 @@ public class IT extends RepoTest {
         Git git = localRepoMock.getGit();
         git.reset().setMode(ResetCommand.ResetType.HARD).setRef("HEAD").call();
         git.checkout().setName("develop").call();
-        final String output = executeBuild(Collections.singletonList("-Dgib." + Property.baseBranch.name() + "=refs/heads/develop"));
+        final String output = executeBuild(Collections.singletonList("-Dgib." + Property.baseBranch.name() +
+                        "=refs/heads/develop"));
         System.out.println(output);
 
         Assert.assertTrue(output.contains("Executing validate goal only."));
@@ -76,13 +83,11 @@ public class IT extends RepoTest {
         Assert.assertTrue(output.contains(" child6"));
     }
 
-
     @Test
     public void buildWithAlsoMakeSkip() throws Exception {
         final String output = executeBuild(Arrays.asList(
-                "-am",
-                "-Dgib." + Property.skipTestsForNotImpactedModules.name() + "=true")
-        );
+                        "-am",
+                        "-Dgib." + Property.skipTestsForNotImpactedModules.name() + "=true"));
         System.out.println(output);
 
         Assert.assertFalse(output.contains(" child1"));
@@ -116,15 +121,12 @@ public class IT extends RepoTest {
     }
 
     private String executeBuild(List<String> args) throws IOException, InterruptedException {
-        String version = Files.readAllLines(Paths.get("pom.xml")).stream().filter(s -> s.contains("<version>")).findFirst().get().replaceAll("</*version>", "").replaceAll("^[ \t]*", "");
-        final List<String> command = Arrays.asList(
-                "cmd", "/c", "mvn",
-                "install",
-                "--file", "parent\\pom.xml",
-                "-DgibVersion=" + version);
-        final Process process =
-                new ProcessBuilder(Stream.concat(command.stream(), args.stream()).collect(Collectors.toList()))
-                        .directory(new File("tmp/repo"))
+        final List<String> command = Arrays.asList("mvn", "install",
+                        "--file", "parent/pom.xml",
+                        "-DgibVersion=" + pluginVersion);
+        final Process process = new ProcessBuilder(Stream.concat(command.stream(), args.stream())
+                        .collect(Collectors.toList()))
+                        .directory(LocalRepoMock.WORK_DIR.toFile().getAbsoluteFile())
                         .start();
         String output = convertStreamToString(process.getInputStream());
         System.out.println(convertStreamToString(process.getErrorStream()));
