@@ -9,7 +9,7 @@ import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,10 +28,20 @@ public class UnchangedProjectsRemover {
         Set<MavenProject> changed = changedProjects.get();
         printDelimiter();
         logProjects(changed, "Changed Artifacts:");
-        Set<MavenProject> changedProjects = mavenSession.getProjects().stream()
-                .filter(changed::contains)
-                .flatMap(p -> getAllDependents(mavenSession.getProjects(), p).stream())
-                .collect(Collectors.toSet());
+        Set<MavenProject> changedProjects = new HashSet<>();
+        mavenSession.getProjects().stream()
+                        .filter(changed::contains)
+                        .peek(m -> logger.warn(m.getId()))
+                        .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changedProjects));
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(mavenSession.getCurrentProject().getBasedir().getPath() + "/changed" +
+                                        ".projects"), "utf-8"))) {
+            for (MavenProject changedProject : changedProjects) {
+                writer.write(changedProject.getGroupId()+":"+changedProject.getArtifactId());
+                writer.write("\n");
+            }
+        }
+
         if (!configuration.buildAll) {
             Set<MavenProject> rebuildProjects = getRebuildProjects(changedProjects);
             if (rebuildProjects.isEmpty()) {
@@ -70,7 +80,7 @@ public class UnchangedProjectsRemover {
         return mavenProject;
     }
 
-    private void logProjects(Set<MavenProject> projects, String title) {
+    private void logProjects(Collection<MavenProject> projects, String title) {
         logger.info(title);
         logger.info("");
         projects.stream().map(MavenProject::getArtifactId).forEach(logger::info);
@@ -81,18 +91,16 @@ public class UnchangedProjectsRemover {
         logger.info("------------------------------------------------------------------------");
     }
 
-    private Set<MavenProject> getAllDependents(List<MavenProject> projects, MavenProject project) {
-        Set<MavenProject> result = new HashSet<>();
-        result.add(project);
+    private void getAllDependents(List<MavenProject> projects, MavenProject project, Set<MavenProject> dependents) {
+        dependents.add(project);
         for (MavenProject possibleDependent: projects) {
-            if (isDependentOf(possibleDependent, project)) {
-                result.addAll(getAllDependents(projects, possibleDependent));
-            }
-            if (project.equals(possibleDependent.getParent())) {
-                result.addAll(getAllDependents(projects, possibleDependent));
+            if (isDependentOf(possibleDependent, project) || project.equals(possibleDependent.getParent())) {
+                if (!dependents.contains(possibleDependent)) {
+                    dependents.add(possibleDependent);
+                    getAllDependents(projects, possibleDependent, dependents);
+                }
             }
         }
-        return result;
     }
 
     private Stream<MavenProject> ifMakeUpstreamGetDependencies(MavenProject mavenProject) {
