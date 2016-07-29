@@ -10,7 +10,9 @@ public enum Property {
     buildAll("false"),
     compareToMergeBase("true"),
     fetchBaseBranch("false"),
-    fetchReferenceBranch("false")
+    fetchReferenceBranch("false"),
+    outputFile("changed.projects"),
+    writeChanged("true")
     ;
 
     public static final String PREFIX = "gib.";

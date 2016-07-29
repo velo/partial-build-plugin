@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -19,18 +18,17 @@ public class ChangedProjects {
 
     @Inject private Logger logger;
     @Inject private DifferentFiles differentFiles;
-    @Inject private MavenSession mavenSession;
     @Inject private Modules modules;
 
     public Set<MavenProject> get() throws GitAPIException, IOException {
         return differentFiles.get().stream()
-                .map(path -> findProject(path, mavenSession))
+                .map(this::findProject)
                 .filter(project -> project != null)
                 .collect(Collectors.toSet());
     }
 
-    private MavenProject findProject(Path diffPath, MavenSession mavenSession) {
-        Map<Path, MavenProject> map = modules.createPathMap(mavenSession);
+    private MavenProject findProject(Path diffPath) {
+        Map<Path, MavenProject> map = modules.createPathMap();
         Path path = diffPath;
         while (path != null && ! map.containsKey(path)) {
             path = path.getParent();
@@ -38,7 +36,7 @@ public class ChangedProjects {
         if (path != null) {
             return map.get(path);
         } else {
-            logger.warn("File changed outside build project: " + diffPath);
+            logger.debug("File changed outside build project: " + diffPath);
             return null;
         }
     }

@@ -6,6 +6,7 @@
   <groupId>com.vackosar.gitflowincrementalbuilder</groupId>
   <artifactId>gitflow-incremental-builder</artifactId>
   <version>2.3-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A maven extension for incremental building of multi-module projects when using Git Flow.</description>
   <url>https://github.com/vackosar/gitflow-incremental-builder</url>
@@ -63,6 +64,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
@@ -83,7 +90,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
+            <version>2.9.1</version>
             <executions>
               <execution>
                 <goals>
@@ -98,8 +105,10 @@
             <version>3.0.0</version>
             <executions>
               <execution>
+                <id>attach-sources</id>
+                <phase>verify</phase>
                 <goals>
-                  <goal>jar</goal>
+                  <goal>jar-no-fork</goal>
                 </goals>
               </execution>
             </executions>
@@ -117,22 +126,6 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.3</version>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>com.amashchenko.maven.plugin</groupId>
-            <artifactId>gitflow-maven-plugin</artifactId>
-            <version>1.2.1</version>
           </plugin>
         </plugins>
       </build>
@@ -186,6 +179,29 @@
           <execution>
             <goals>
               <goal>generate-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.4</version>
+        <configuration>
+          <goalPrefix>gitflow</goalPrefix>
+          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        </configuration>
+        <executions>
+          <execution>
+            <id>mojo-descriptor</id>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>help-goal</id>
+            <goals>
+              <goal>helpmojo</goal>
             </goals>
           </execution>
         </executions>

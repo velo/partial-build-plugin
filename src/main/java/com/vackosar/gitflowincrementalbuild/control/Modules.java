@@ -8,12 +8,15 @@ import java.util.stream.Collectors;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class Modules {
 
-    public Map<Path, MavenProject> createPathMap(MavenSession session) {
+    @Inject MavenSession session;
+
+    public Map<Path, MavenProject> createPathMap() {
         return session.getProjects().stream()
                 .collect(Collectors.toMap(Modules::getPath, project -> project));
     }
