@@ -1,6 +1,11 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
-import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -12,15 +17,9 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
 
 @Singleton
 public class DifferentFiles {

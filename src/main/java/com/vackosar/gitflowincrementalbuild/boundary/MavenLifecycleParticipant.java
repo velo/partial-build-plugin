@@ -1,7 +1,7 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
-import com.google.inject.Guice;
-import com.vackosar.gitflowincrementalbuild.control.Property;
+import java.io.IOException;
+
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.MavenSession;
@@ -10,7 +10,8 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.IOException;
+import com.google.inject.Guice;
+import com.vackosar.gitflowincrementalbuild.control.Property;
 
 @Component(role = AbstractMavenLifecycleParticipant.class)
 public class MavenLifecycleParticipant extends AbstractMavenLifecycleParticipant {

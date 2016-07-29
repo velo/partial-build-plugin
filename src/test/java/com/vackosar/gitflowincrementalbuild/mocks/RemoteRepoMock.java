@@ -1,12 +1,12 @@
 package com.vackosar.gitflowincrementalbuild.mocks;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.transport.Daemon;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.transport.Daemon;
 
 public class RemoteRepoMock implements AutoCloseable {
 

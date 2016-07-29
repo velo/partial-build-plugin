@@ -1,15 +1,16 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
-import com.vackosar.gitflowincrementalbuild.control.Property;
-import org.apache.maven.MavenExecutionException;
-import org.apache.maven.execution.MavenSession;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.maven.MavenExecutionException;
+import org.apache.maven.execution.MavenSession;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.vackosar.gitflowincrementalbuild.control.Property;
 
 @Singleton
 public class Configuration {

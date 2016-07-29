@@ -1,13 +1,14 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
-import com.google.inject.Singleton;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.project.MavenProject;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.MavenProject;
+
+import com.google.inject.Singleton;
 
 @Singleton
 public class Modules {

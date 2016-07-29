@@ -1,12 +1,13 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
-import com.vackosar.gitflowincrementalbuild.control.Property;
+import java.lang.reflect.Field;
+
 import org.apache.maven.MavenExecutionException;
 import org.codehaus.plexus.logging.Logger;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.lang.reflect.Field;
+import com.vackosar.gitflowincrementalbuild.control.Property;
 
 public class MavenLifecycleParticipantTest {
 

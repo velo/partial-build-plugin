@@ -1,12 +1,11 @@
 package org.slf4j.impl;
 
+import java.util.Arrays;
+
+import org.slf4j.*;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-
-import java.util.Arrays;
 
 @Singleton
 public class StaticLoggerBinder {

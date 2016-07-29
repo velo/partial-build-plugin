@@ -1,13 +1,11 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
-import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
-import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
-import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
-import com.vackosar.gitflowincrementalbuild.mocks.MavenSessionMock;
-import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -15,21 +13,15 @@ import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.google.inject.*;
+import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
+import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
+import com.vackosar.gitflowincrementalbuild.mocks.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DifferentFilesTest extends RepoTest {

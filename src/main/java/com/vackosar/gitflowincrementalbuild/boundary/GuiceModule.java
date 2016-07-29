@@ -1,7 +1,8 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
@@ -9,9 +10,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
+import com.google.inject.*;
 
 public class GuiceModule extends AbstractModule {
 

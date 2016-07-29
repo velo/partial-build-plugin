@@ -1,18 +1,19 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
-import com.google.inject.Singleton;
-import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import javax.inject.Inject;
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
 
 @Singleton
 public class UnchangedProjectsRemover {
