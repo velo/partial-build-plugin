@@ -42,9 +42,19 @@ public class DifferentFilesTest extends RepoTest {
     }
 
     @Test
-    public void listIncludingUncommited() throws Exception {
+    public void listIncludingOnlyUncommited() throws Exception {
         workDir.resolve("file5").toFile().createNewFile();
+        module().provideGit().add().addFilepattern(".").call();
+        Property.untracked.setValue(Boolean.FALSE.toString());
         Property.uncommited.setValue(Boolean.TRUE.toString());
+        Assert.assertTrue(getInstance().get().stream().anyMatch(p -> p.toString().contains("file5")));
+    }
+
+    @Test
+    public void listIncludingOnlyUntracked() throws Exception {
+        workDir.resolve("file5").toFile().createNewFile();
+        Property.uncommited.setValue(Boolean.FALSE.toString());
+        Property.untracked.setValue(Boolean.TRUE.toString());
         Assert.assertTrue(getInstance().get().stream().anyMatch(p -> p.toString().contains("file5")));
     }
 

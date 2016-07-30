@@ -45,6 +45,9 @@ public class DifferentFiles {
         if (configuration.uncommited) {
             paths.addAll(getUncommitedChanges(gitDir));
         }
+        if (configuration.untracked) {
+            paths.addAll(getUntrackedChanges(gitDir));
+        }
         treeWalk.close();
         git.getRepository().close();
         git.close();
@@ -119,6 +122,11 @@ public class DifferentFiles {
 
     private Set<Path> getUncommitedChanges(Path gitDir) throws GitAPIException {
         return git.status().call().getUncommittedChanges().stream()
+                .map(gitDir::resolve).map(Path::normalize).collect(Collectors.toSet());
+    }
+
+    private Set<Path> getUntrackedChanges(Path gitDir) throws GitAPIException {
+        return git.status().call().getUntracked().stream()
                 .map(gitDir::resolve).map(Path::normalize).collect(Collectors.toSet());
     }
 

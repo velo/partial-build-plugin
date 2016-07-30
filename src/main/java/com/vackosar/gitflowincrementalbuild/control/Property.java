@@ -1,19 +1,20 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
 public enum Property {
+
     enabled("true"),
     repositorySshKey(""),
     referenceBranch("refs/remotes/origin/develop"),
     baseBranch("HEAD"),
     uncommited("true"),
+    untracked("false"),
     skipTestsForNotImpactedModules("false"),
     buildAll("false"),
     compareToMergeBase("true"),
     fetchBaseBranch("false"),
     fetchReferenceBranch("false"),
     outputFile("changed.projects"),
-    writeChanged("true")
-    ;
+    writeChanged("true"),;
 
     public static final String PREFIX = "gib.";
 
@@ -24,7 +25,7 @@ public enum Property {
     }
 
     private String exemplify() {
-        return "<" + fullName() + ">" + ( defaultValue == null ? "" : defaultValue )+ "</" + fullName() + ">";
+        return "<" + fullName() + ">" + (defaultValue == null ? "" : defaultValue) + "</" + fullName() + ">";
     }
 
     private String fullName() {
@@ -42,7 +43,7 @@ public enum Property {
     public static String exemplifyAll() {
         StringBuilder builder = new StringBuilder();
         builder.append("<properties>\n");
-        for (Property value :Property.values()) {
+        for (Property value : Property.values()) {
             builder.append("\t").append(value.exemplify()).append("\n");
         }
         builder.append("</properties>\n");
