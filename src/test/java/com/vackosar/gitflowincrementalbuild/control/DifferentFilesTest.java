@@ -1,15 +1,6 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
-import com.google.inject.Guice;
-import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
-import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import static com.vackosar.gitflowincrementalbuild.mocks.ModuleMock.module;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +9,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.vackosar.gitflowincrementalbuild.mocks.ModuleMock.module;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.google.inject.Guice;
+import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
+import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DifferentFilesTest extends RepoTest {

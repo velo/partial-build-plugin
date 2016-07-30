@@ -14,15 +14,20 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.*;
-import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.vackosar.gitflowincrementalbuild.boundary.*;
+import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
+import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
+import com.vackosar.gitflowincrementalbuild.boundary.UnchangedProjectsRemover;
 import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
 import com.vackosar.gitflowincrementalbuild.utils.MavenToPlexusLogAdapter;
 

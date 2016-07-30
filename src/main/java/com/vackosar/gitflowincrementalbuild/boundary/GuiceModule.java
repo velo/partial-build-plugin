@@ -10,7 +10,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 
 public class GuiceModule extends AbstractModule {
 

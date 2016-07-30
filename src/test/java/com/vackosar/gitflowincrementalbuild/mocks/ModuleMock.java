@@ -1,10 +1,7 @@
 package com.vackosar.gitflowincrementalbuild.mocks;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
-import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
+import java.io.IOException;
+
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -13,7 +10,11 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import java.io.IOException;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
+import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
 
 public class ModuleMock extends AbstractModule {
 

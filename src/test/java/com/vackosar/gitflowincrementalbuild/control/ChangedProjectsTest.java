@@ -3,7 +3,9 @@ package com.vackosar.gitflowincrementalbuild.control;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.project.MavenProject;
@@ -13,7 +15,9 @@ import org.junit.Test;
 
 import com.google.inject.Guice;
 import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
-import com.vackosar.gitflowincrementalbuild.mocks.*;
+import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
+import com.vackosar.gitflowincrementalbuild.mocks.MavenSessionMock;
+import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
 
 public class ChangedProjectsTest extends RepoTest {
 
