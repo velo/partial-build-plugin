@@ -1,27 +1,24 @@
 package com.vackosar.gitflowincrementalbuild.control;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.maven.execution.MavenSession;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
+import com.google.inject.Guice;
+import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
+import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.impl.StaticLoggerBinder;
 
-import com.google.inject.*;
-import com.vackosar.gitflowincrementalbuild.boundary.Configuration;
-import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
-import com.vackosar.gitflowincrementalbuild.mocks.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.vackosar.gitflowincrementalbuild.mocks.ModuleMock.module;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DifferentFilesTest extends RepoTest {
@@ -144,38 +141,6 @@ public class DifferentFilesTest extends RepoTest {
 
     private boolean filterIgnored(Path p) {
         return ! p.toString().contains("target") && ! p.toString().contains(".iml");
-    }
-
-    private ModuleFacade module() throws Exception {
-        return new ModuleFacade();
-    }
-
-    private static class ModuleFacade extends AbstractModule {
-        private final GuiceModule guiceModule;
-
-        public ModuleFacade() throws Exception {
-            this.guiceModule = new GuiceModule(new ConsoleLogger(), getMavenSessionMock());
-        }
-
-        @Singleton @Provides public Logger provideLogger() {
-            return new ConsoleLoggerManager().getLoggerForComponent("Test");
-        }
-
-        @Singleton @Provides public Git provideGit() throws IOException, GitAPIException {
-            return guiceModule.provideGit(new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test")));
-        }
-
-        @Singleton @Provides public Configuration arguments() throws Exception {
-            MavenSession mavenSession = getMavenSessionMock();
-            return new Configuration(mavenSession);
-        }
-
-        private MavenSession getMavenSessionMock() throws Exception {
-            return MavenSessionMock.get();
-        }
-
-        @Override
-        protected void configure() {}
     }
 
     private DifferentFiles getInstance() throws Exception {
