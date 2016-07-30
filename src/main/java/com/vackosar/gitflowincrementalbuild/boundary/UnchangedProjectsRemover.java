@@ -43,15 +43,15 @@ public class UnchangedProjectsRemover {
 
         mavenSession.getCurrentProject().getProperties().setProperty(CHANGED_PROJECTS, joinProjectIds(changedProjects,
                         new StringJoiner(",")).toString());
-        if (configuration.writeChanged) {
+        if (configuration.writeChanged()) {
 
 
             File defaultFile = new File(mavenSession.getCurrentProject().getBasedir().getPath() + CHANGED_PROJECTS);
-            Path outputFilePath = configuration.outputFile.orElse(defaultFile.toPath());
+            Path outputFilePath = configuration.outputFile().orElse(defaultFile.toPath());
             writeChangedProjectsToFile(changedProjects, outputFilePath.toFile());
         }
 
-        if (!configuration.buildAll) {
+        if (!configuration.buildAll()) {
             Set<MavenProject> rebuildProjects = getRebuildProjects(changedProjects);
             if (rebuildProjects.isEmpty()) {
                 logger.info("No changed artifacts to build. Executing validate goal only.");
@@ -76,7 +76,7 @@ public class UnchangedProjectsRemover {
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
-        if (configuration.makeUpstream) {
+        if (configuration.makeUpstream()) {
             return Stream.concat(changedProjects.stream(), collectDependencies(changedProjects)).collect(Collectors
                             .toSet());
         } else {
@@ -92,7 +92,7 @@ public class UnchangedProjectsRemover {
     }
 
     private MavenProject ifSkipDependenciesTest(MavenProject mavenProject) {
-        if (configuration.skipTestsForNotImpactedModules) {
+        if (configuration.skipTestsForNotImpactedModules()) {
             mavenProject.getProperties().setProperty(MAVEN_TEST_SKIP, Boolean.TRUE.toString());
         }
         return mavenProject;

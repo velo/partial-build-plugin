@@ -18,26 +18,32 @@ public enum Property {
 
     public static final String PREFIX = "gib.";
 
-    public final String defaultValue;
+    private final String defaultValue;
+
+    private String value;
 
     Property(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
-    private String exemplify() {
-        return "<" + fullName() + ">" + (defaultValue == null ? "" : defaultValue) + "</" + fullName() + ">";
-    }
-
-    private String fullName() {
+    public String fullName() {
         return PREFIX + this.name();
     }
 
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+
     public String getValue() {
-        return System.getProperty(fullName(), defaultValue);
+        return value == null ? defaultValue : value;
     }
 
     public void setValue(String value) {
-        System.setProperty(fullName(), value);
+        this.value = value;
+    }
+
+    private String exemplify() {
+        return "<" + fullName() + ">" + (defaultValue == null ? "" : defaultValue) + "</" + fullName() + ">";
     }
 
     public static String exemplifyAll() {

@@ -1,6 +1,8 @@
 package com.vackosar.gitflowincrementalbuild.mocks;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.junit.After;
@@ -45,7 +47,7 @@ public abstract class RepoTest {
 
     private void resetProperties() {
         for (Property property : Property.values()) {
-            property.setValue(property.defaultValue);
+            property.setValue(property.getDefaultValue());
         }
         Property.uncommited.setValue("false");
         Property.referenceBranch.setValue("refs/heads/develop");

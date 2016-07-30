@@ -4,8 +4,9 @@ import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.extractPlug
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.MavenSession;
@@ -22,125 +23,160 @@ public class Configuration {
 
     private static final String MAKE_UPSTREAM = "make-upstream";
 
-    public final boolean enabled;
-    public final Optional<Path> key;
-    public final String referenceBranch;
-    public final String baseBranch;
-    public final boolean uncommited;
-    public final boolean untracked;
-    public final boolean makeUpstream;
-    public final boolean skipTestsForNotImpactedModules;
-    public final boolean buildAll;
-    public final boolean compareToMergeBase;
-    public final boolean fetchBaseBranch;
-    public final boolean fetchReferenceBranch;
-    public final Optional<Path> outputFile;
-    public final boolean writeChanged;
+    private final boolean enabled;
+    private final Path key;
+    private final String referenceBranch;
+    private final String baseBranch;
+    private final boolean uncommited;
+    private final boolean untracked;
+    private final boolean makeUpstream;
+    private final boolean skipTestsForNotImpactedModules;
+    private final boolean buildAll;
+    private final boolean compareToMergeBase;
+    private final boolean fetchBaseBranch;
+    private final boolean fetchReferenceBranch;
+    private final Path outputFile;
+    private final boolean writeChanged;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
 
-        Plugin plugin = session.getCurrentProject().getPlugin(PLUGIN_KEY);
-        if (plugin != null) {
-            enabled = Boolean.valueOf(getPluginConfigOrDefault(Property.enabled, plugin));
-            key = parseKey(session, extractPluginConfigValue(Property.repositorySshKey.name(), plugin));
-            referenceBranch = getPluginConfigOrDefault(Property.referenceBranch, plugin);
-            baseBranch = getPluginConfigOrDefault(Property.baseBranch, plugin);
-            uncommited = Boolean.valueOf(getPluginConfigOrDefault(Property.uncommited, plugin));
-            untracked = Boolean.valueOf(getPluginConfigOrDefault(Property.untracked, plugin));
+        try {
             makeUpstream = MAKE_UPSTREAM.equals(session.getRequest().getMakeBehavior());
-            skipTestsForNotImpactedModules = Boolean.valueOf(getPluginConfigOrDefault(Property
-                            .skipTestsForNotImpactedModules, plugin));
-            buildAll = Boolean.valueOf(getPluginConfigOrDefault(Property.buildAll, plugin));
-            compareToMergeBase = Boolean.valueOf(getPluginConfigOrDefault(Property.compareToMergeBase, plugin));
-            fetchReferenceBranch = Boolean.valueOf(getPluginConfigOrDefault(Property.fetchReferenceBranch,
-                            plugin));
-            fetchBaseBranch = Boolean.valueOf(getPluginConfigOrDefault(Property.fetchBaseBranch, plugin));
-            outputFile = parseOutputFile(session, getPluginConfigOrDefault(Property.outputFile, plugin));
-            writeChanged = Boolean.valueOf(getPluginConfigOrDefault(Property.writeChanged, plugin));
-        } else {
-            try {
-                mergeCurrentProjectProperties(session);
-                checkProperties();
-                enabled = Boolean.valueOf(Property.enabled.getValue());
-                key = parseKey(session, Property.repositorySshKey.getValue());
-                referenceBranch = Property.referenceBranch.getValue();
-                baseBranch = Property.baseBranch.getValue();
-                uncommited = Boolean.valueOf(Property.uncommited.getValue());
-                untracked = Boolean.valueOf(Property.untracked.getValue());
-                makeUpstream = MAKE_UPSTREAM.equals(session.getRequest().getMakeBehavior());
-                skipTestsForNotImpactedModules = Boolean.valueOf(Property.skipTestsForNotImpactedModules.getValue());
-                buildAll = Boolean.valueOf(Property.buildAll.getValue());
-                compareToMergeBase = Boolean.valueOf(Property.compareToMergeBase.getValue());
-                fetchReferenceBranch = Boolean.valueOf(Property.fetchReferenceBranch.getValue());
-                fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
-                outputFile = parseOutputFile(session, Property.outputFile.getValue());
-                writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            Plugin plugin = session.getCurrentProject().getPlugin(PLUGIN_KEY);
+            // check properties
+            checkProperties(session.getTopLevelProject().getProperties());
+            checkPluginConfiguration(plugin);
+            checkProperties(System.getProperties());
+            checkProperties(session.getUserProperties());
+            // parse into configuration
+            enabled = Boolean.valueOf(Property.enabled.getValue());
+            key = parseKey(session, Property.repositorySshKey.getValue());
+            referenceBranch = Property.referenceBranch.getValue();
+            baseBranch = Property.baseBranch.getValue();
+            uncommited = Boolean.valueOf(Property.uncommited.getValue());
+            untracked = Boolean.valueOf(Property.untracked.getValue());
+            skipTestsForNotImpactedModules = Boolean.valueOf(Property.skipTestsForNotImpactedModules.getValue());
+            buildAll = Boolean.valueOf(Property.buildAll.getValue());
+            compareToMergeBase = Boolean.valueOf(Property.compareToMergeBase.getValue());
+            fetchReferenceBranch = Boolean.valueOf(Property.fetchReferenceBranch.getValue());
+            fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
+            outputFile = parseOutputFile(session, Property.outputFile.getValue());
+            writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
     }
 
-    private Optional<Path> parseKey(MavenSession session, String keyOptionValue) throws IOException {
+    private Path parseKey(MavenSession session, String keyOptionValue) throws IOException {
         Path pomDir = session.getCurrentProject().getBasedir().toPath();
         if (keyOptionValue != null && !keyOptionValue.isEmpty()) {
-            return Optional.of(pomDir.resolve(keyOptionValue).toAbsolutePath().toRealPath().normalize());
-        } else {
-            return Optional.empty();
+            return pomDir.resolve(keyOptionValue).toAbsolutePath().toRealPath().normalize();
         }
+        return null;
     }
 
-    private Optional<Path> parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
+    private Path parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
         Path pomDir = session.getCurrentProject().getBasedir().toPath();
         if (outputFileValue != null && !outputFileValue.isEmpty()) {
-            return Optional.of(pomDir.resolve(outputFileValue).toAbsolutePath().normalize());
-        } else {
-            return Optional.empty();
+            return pomDir.resolve(outputFileValue).toAbsolutePath().normalize();
+        }
+        return null;
+    }
+
+    private void checkPluginConfiguration(Plugin plugin) {
+        if (null != plugin) {
+            Arrays.stream(Property.values())
+                    .forEach(p -> p.setValue(extractPluginConfigValue(p.name(), plugin)));
         }
     }
 
-    private void mergeCurrentProjectProperties(MavenSession mavenSession) {
-        mavenSession.getTopLevelProject().getProperties().entrySet().stream()
-                        .filter(e -> e.getKey().toString().startsWith(Property.PREFIX))
-                        .filter(e -> System.getProperty(e.getKey().toString()) == null)
-                        .forEach(e -> System.setProperty(e.getKey().toString(), e.getValue().toString()));
-    }
-
-    private void checkProperties() throws MavenExecutionException {
+    private void checkProperties(Properties properties) throws MavenExecutionException {
         try {
-            System.getProperties().entrySet().stream().map(Map.Entry::getKey)
-                            .filter(o -> o instanceof String).map(o -> (String) o)
-                            .filter(s -> s.startsWith(Property.PREFIX))
-                            .map(s -> s.replaceFirst(Property.PREFIX, ""))
-                            .forEach(Property::valueOf);
+            properties.stringPropertyNames().stream()
+                    .filter(s -> s.startsWith(Property.PREFIX))
+                    .map(s -> s.replaceFirst(Property.PREFIX, ""))
+                    .map(Property::valueOf)
+                    .forEach(p -> p.setValue(properties.getProperty(p.fullName())));
         } catch (IllegalArgumentException e) {
             throw new MavenExecutionException("Invalid invalid GIB property found. Allowed properties: \n" + Property
-                            .exemplifyAll(), e);
+                    .exemplifyAll(), e);
         }
     }
 
-    private String getPluginConfigOrDefault(Property property, Plugin plugin) {
-        String value = extractPluginConfigValue(property.name(), plugin);
-        return value == null ? property.defaultValue : value;
+    public boolean enabled() {
+        return enabled;
+    }
+
+    public Optional<Path> key() {
+        return Optional.of(key);
+    }
+
+    public String referenceBranch() {
+        return referenceBranch;
+    }
+
+    public String baseBranch() {
+        return baseBranch;
+    }
+
+    public boolean uncommited() {
+        return uncommited;
+    }
+
+    public boolean untracked() {
+        return untracked;
+    }
+
+    public boolean makeUpstream() {
+        return makeUpstream;
+    }
+
+    public boolean skipTestsForNotImpactedModules() {
+        return skipTestsForNotImpactedModules;
+    }
+
+    public boolean buildAll() {
+        return buildAll;
+    }
+
+    public boolean compareToMergeBase() {
+        return compareToMergeBase;
+    }
+
+    public boolean fetchBaseBranch() {
+        return fetchBaseBranch;
+    }
+
+    public boolean fetchReferenceBranch() {
+        return fetchReferenceBranch;
+    }
+
+    public Optional<Path> outputFile() {
+        return Optional.of(outputFile);
+    }
+
+    public boolean writeChanged() {
+        return writeChanged;
     }
 
     @Override
     public String toString() {
         return "Configuration{" +
-                        "enabled=" + enabled +
-                        ", key=" + key +
-                        ", referenceBranch='" + referenceBranch + '\'' +
-                        ", baseBranch='" + baseBranch + '\'' +
-                        ", uncommited=" + uncommited +
-                        ", makeUpstream=" + makeUpstream +
-                        ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
-                        ", buildAll=" + buildAll +
-                        ", compareToMergeBase=" + compareToMergeBase +
-                        ", fetchBaseBranch=" + fetchBaseBranch +
-                        ", fetchReferenceBranch=" + fetchReferenceBranch +
-                        ", outputFile='" + outputFile + '\'' +
-                        ", writeChanged=" + writeChanged +
-                        '}';
+                "enabled=" + enabled +
+                ", key=" + key +
+                ", referenceBranch='" + referenceBranch + '\'' +
+                ", baseBranch='" + baseBranch + '\'' +
+                ", uncommited=" + uncommited +
+                ", makeUpstream=" + makeUpstream +
+                ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
+                ", buildAll=" + buildAll +
+                ", compareToMergeBase=" + compareToMergeBase +
+                ", fetchBaseBranch=" + fetchBaseBranch +
+                ", fetchReferenceBranch=" + fetchReferenceBranch +
+                ", outputFile='" + outputFile + '\'' +
+                ", writeChanged=" + writeChanged +
+                '}';
     }
 }

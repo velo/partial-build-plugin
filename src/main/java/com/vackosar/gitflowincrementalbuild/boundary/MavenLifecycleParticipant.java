@@ -25,7 +25,7 @@ public class MavenLifecycleParticipant extends AbstractMavenLifecycleParticipant
         logger.info(configuration.toString());
 
         try {
-            if (configuration.enabled) {
+            if (configuration.enabled()) {
                 logger.info("gitflow-incremental-builder starting...");
                 injector.getInstance(UnchangedProjectsRemover.class).act();
                 logger.info("gitflow-incremental-builder exiting...");
