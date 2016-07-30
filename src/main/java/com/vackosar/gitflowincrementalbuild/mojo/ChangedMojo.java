@@ -4,10 +4,12 @@
 package com.vackosar.gitflowincrementalbuild.mojo;
 
 import static com.vackosar.gitflowincrementalbuild.boundary.UnchangedProjectsRemover.CHANGED_PROJECTS;
+import static com.vackosar.gitflowincrementalbuild.control.Property.PREFIX;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.joinProjectIds;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChangedProjectsToFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -34,43 +36,43 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}")
     private MavenSession session;
 
-    @Parameter(required = false, defaultValue = "true")
+    @Parameter(required = false, property = PREFIX + "enabled", defaultValue = "true")
     public boolean enabled;
 
-    @Parameter(required = false, defaultValue = "")
+    @Parameter(required = false, property = PREFIX + "key", defaultValue = "")
     public String key;
 
-    @Parameter(required = false, defaultValue = "refs/remotes/origin/develop")
+    @Parameter(required = false, property = PREFIX + "referenceBranch", defaultValue = "refs/remotes/origin/develop")
     public String referenceBranch;
 
-    @Parameter(required = false, defaultValue = "HEAD")
+    @Parameter(required = false, property = PREFIX + "baseBranch", defaultValue = "HEAD")
     public String baseBranch;
 
-    @Parameter(required = false, defaultValue = "true")
+    @Parameter(required = false, property = PREFIX + "uncommited", defaultValue = "true")
     public boolean uncommited;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "makeUpstream", defaultValue = "false")
     public boolean makeUpstream;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "skipTestsForNotImpactedModules", defaultValue = "false")
     public boolean skipTestsForNotImpactedModules;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "buildAll", defaultValue = "false")
     public boolean buildAll;
 
-    @Parameter(required = false, defaultValue = "true")
+    @Parameter(required = false, property = PREFIX + "compareToMergeBase", defaultValue = "true")
     public boolean compareToMergeBase;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "fetchBaseBranch", defaultValue = "false")
     public boolean fetchBaseBranch;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "fetchReferenceBranch", defaultValue = "false")
     public boolean fetchReferenceBranch;
 
-    @Parameter(required = false, defaultValue = "${project.basedir}/changed.projects")
+    @Parameter(required = false, property = PREFIX + "outputFile", defaultValue = "${project.basedir}/changed.projects")
     public String outputFile;
 
-    @Parameter(required = false, defaultValue = "false")
+    @Parameter(required = false, property = PREFIX + "writeChanged", defaultValue = "false")
     public String writeChanged;
 
     @Override
