@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import com.google.inject.Guice;
 import com.vackosar.gitflowincrementalbuild.boundary.GuiceModule;
-import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
 import com.vackosar.gitflowincrementalbuild.mocks.MavenSessionMock;
 import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
 
@@ -32,7 +31,7 @@ public class ChangedProjectsTest extends RepoTest {
                 .getInstance(ChangedProjects.class).get().stream()
                 .map(MavenProject::getBasedir)
                 .map(File::toPath)
-                .map(LocalRepoMock.WORK_DIR.resolve("parent")::relativize)
+                .map(RepoTest.LOCAL_DIR.resolve("parent")::relativize)
                 .collect(Collectors.toSet());
         Assert.assertEquals(expected, actual);
     }

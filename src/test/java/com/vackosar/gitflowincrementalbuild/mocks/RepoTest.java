@@ -3,6 +3,8 @@ package com.vackosar.gitflowincrementalbuild.mocks;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.junit.After;
@@ -12,6 +14,11 @@ import org.slf4j.impl.StaticLoggerBinder;
 import com.vackosar.gitflowincrementalbuild.control.Property;
 
 public abstract class RepoTest {
+
+    public static final String TEMPLATE_ZIP = "/template.zip";
+    public static final Path TEST_WORK_DIR = Paths.get(System.getProperty("buildDir"));
+    public static final Path LOCAL_DIR = TEST_WORK_DIR.resolve("tmp/repo/");
+    public static final Path REMOTE_DIR = TEST_WORK_DIR.resolve("tmp/remote/");
 
     protected LocalRepoMock localRepoMock;
     public StaticLoggerBinder staticLoggerBinder;

@@ -29,19 +29,16 @@ public class DifferentFilesTest extends RepoTest {
     private static final String FETCH_FILE = "fetch-file";
     private static final String DEVELOP = "refs/heads/develop";
     private static final String REMOTE_DEVELOP = "refs/remotes/origin/develop";
-    private Path workDir;
 
     @Before
     public void before() throws Exception {
         super.init();
-        workDir = LocalRepoMock.TEST_WORK_DIR.resolve("tmp/repo/");
-        setWorkDir(workDir);
         localRepoMock = new LocalRepoMock(true);
     }
 
     @Test
     public void listIncludingOnlyUncommited() throws Exception {
-        workDir.resolve("file5").toFile().createNewFile();
+        LOCAL_DIR.resolve("file5").toFile().createNewFile();
         module().provideGit().add().addFilepattern(".").call();
         Property.untracked.setValue(Boolean.FALSE.toString());
         Property.uncommited.setValue(Boolean.TRUE.toString());
@@ -50,7 +47,7 @@ public class DifferentFilesTest extends RepoTest {
 
     @Test
     public void listIncludingOnlyUntracked() throws Exception {
-        workDir.resolve("file5").toFile().createNewFile();
+        LOCAL_DIR.resolve("file5").toFile().createNewFile();
         Property.uncommited.setValue(Boolean.FALSE.toString());
         Property.untracked.setValue(Boolean.TRUE.toString());
         Assert.assertTrue(getInstance().get().stream().anyMatch(p -> p.toString().contains("file5")));
@@ -68,18 +65,17 @@ public class DifferentFilesTest extends RepoTest {
     public void list() throws Exception {
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
-                Paths.get(workDir + "/parent/child2/subchild2/src/resources/file2"),
-                Paths.get(workDir + "/parent/child2/subchild2/src/resources/file22"),
-                Paths.get(workDir + "/parent/child3/src/resources/file1"),
-                Paths.get(workDir + "/parent/child4/pom.xml")
+                Paths.get(LOCAL_DIR + "/parent/child2/subchild2/src/resources/file2"),
+                Paths.get(LOCAL_DIR + "/parent/child2/subchild2/src/resources/file22"),
+                Paths.get(LOCAL_DIR + "/parent/child3/src/resources/file1"),
+                Paths.get(LOCAL_DIR + "/parent/child4/pom.xml")
                 ));
         Assert.assertEquals(expected, differentFiles.get());
     }
 
     @Test
     public void listInSubdir() throws Exception {
-        Path workDir = LocalRepoMock.TEST_WORK_DIR.resolve("tmp/repo/parent/child2");
-        setWorkDir(workDir);
+        Path workDir = LOCAL_DIR.resolve("parent/child2");
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
                 workDir.resolve("subchild2/src/resources/file2"),
@@ -97,7 +93,8 @@ public class DifferentFilesTest extends RepoTest {
         getLocalRepoMock().getGit().reset().setRef(HEAD).setMode(ResetCommand.ResetType.HARD).call();
         Property.baseBranch.setValue(REFS_HEADS_FEATURE_2);
         Property.compareToMergeBase.setValue("true");
-        Assert.assertTrue(getInstance().get().stream().collect(Collectors.toSet()).contains(workDir.resolve("parent/feature2-only-file.txt")));
+        Assert.assertTrue(getInstance().get().stream()
+                .collect(Collectors.toSet()).contains(LOCAL_DIR.resolve("parent/feature2-only-file.txt")));
         Assert.assertTrue(consoleOut.toString().contains("59dc82fa887d9ca82a0d3d1790c6d767e738e71a"));
     }
 
@@ -148,7 +145,4 @@ public class DifferentFilesTest extends RepoTest {
         return Guice.createInjector(module()).getInstance(DifferentFiles.class);
     }
 
-    private void setWorkDir(final Path path) {
-        System.setProperty("user.dir", path.toString());
-    }
 }

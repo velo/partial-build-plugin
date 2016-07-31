@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -14,21 +15,29 @@ import java.util.zip.ZipInputStream;
 
 public class UnZiper {
 
-    public void act(File zip, File outputFolder){
-        try{
+    public void act(InputStream zipStream, File outputFolder) {
+        try {
             createOutputFolder(outputFolder);
-            ZipInputStream zis = createZipInputStream(zip);
+            ZipInputStream zis = createZipInputStream(zipStream);
             process(outputFolder, zis);
             zis.closeEntry();
             zis.close();
-        }catch(IOException e){
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void act(File zip, File outputFolder) {
+        try {
+            this.act(new FileInputStream(zip), outputFolder);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void process(File outputFolder, ZipInputStream zis) throws IOException {
         ZipEntry ze = zis.getNextEntry();
-        while(ze!=null){
+        while (ze != null) {
             String fileName = ze.getName();
             File newFile = new File(outputFolder.getPath() + File.separator + fileName);
             createParentDirectories(newFile);
@@ -57,17 +66,17 @@ public class UnZiper {
         new File(newFile.getParent()).mkdirs();
     }
 
-    private ZipInputStream createZipInputStream(File zip) throws FileNotFoundException {
-        return new ZipInputStream(new FileInputStream(zip));
+    private ZipInputStream createZipInputStream(InputStream zipStream) throws FileNotFoundException {
+        return new ZipInputStream(zipStream);
     }
 
     private void createOutputFolder(File outputFolder) {
-        if(!outputFolder.exists()){
+        if (!outputFolder.exists()) {
             outputFolder.mkdir();
         }
     }
 
-    public void setFileCreationDate(File file, FileTime creationDate) throws IOException{
+    public void setFileCreationDate(File file, FileTime creationDate) throws IOException {
         BasicFileAttributeView attributes = Files.getFileAttributeView(Paths.get(file.getPath()), BasicFileAttributeView.class);
         attributes.setTimes(creationDate, creationDate, creationDate);
     }

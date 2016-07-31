@@ -4,8 +4,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
@@ -15,18 +18,18 @@ import org.apache.maven.project.MavenProject;
 public class MavenSessionMock {
 
     public static MavenSession get() throws Exception {
-        List<MavenProject> projects = Arrays.asList(
-                LocalRepoMock.WORK_DIR.resolve("parent"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child1"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child2"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child2/subchild1"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child2/subchild2"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child3"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child4"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child4/subchild41"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child4/subchild42"),
-                LocalRepoMock.WORK_DIR.resolve("parent/child5")
-        ).stream().map(MavenSessionMock::createProject).collect(Collectors.toList());
+        List<MavenProject> projects = Stream.of(
+                RepoTest.LOCAL_DIR.resolve("parent"),
+                RepoTest.LOCAL_DIR.resolve("parent/child1"),
+                RepoTest.LOCAL_DIR.resolve("parent/child2"),
+                RepoTest.LOCAL_DIR.resolve("parent/child2/subchild1"),
+                RepoTest.LOCAL_DIR.resolve("parent/child2/subchild2"),
+                RepoTest.LOCAL_DIR.resolve("parent/child3"),
+                RepoTest.LOCAL_DIR.resolve("parent/child4"),
+                RepoTest.LOCAL_DIR.resolve("parent/child4/subchild41"),
+                RepoTest.LOCAL_DIR.resolve("parent/child4/subchild42"),
+                RepoTest.LOCAL_DIR.resolve("parent/child5")
+        ).map(MavenSessionMock::createProject).collect(Collectors.toList());
         MavenSession mavenSession = mock(MavenSession.class);
         when(mavenSession.getCurrentProject()).thenReturn(projects.get(0));
         MavenExecutionRequest request = mock(MavenExecutionRequest.class);

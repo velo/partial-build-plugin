@@ -2,9 +2,8 @@ package com.vackosar.gitflowincrementalbuild.mocks;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -14,27 +13,22 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 
-public class LocalRepoMock implements AutoCloseable {
+public class LocalRepoMock extends RepoMock {
 
-    public static final Path TEST_WORK_DIR = Paths.get(System.getProperty("user.dir"));
-    public static final Path WORK_DIR = TEST_WORK_DIR.resolve("tmp/repo/");
-    private static final File REPO = WORK_DIR.toFile();
-    private static final File ZIP = TEST_WORK_DIR.resolve("src/test/resources/template.zip").toFile();
-    private RemoteRepoMock remoteRepo = new RemoteRepoMock(false);
-    private Git git;
+    private static final File REPO = RepoTest.LOCAL_DIR.toFile();
+    private final Git git;
+    private RemoteRepoMock remoteRepo;
 
     public LocalRepoMock(boolean remote) throws IOException, URISyntaxException, GitAPIException {
         try {delete(REPO);} catch (Exception e) {}
-        new UnZiper().act(ZIP, REPO);
-        git = new Git(new FileRepository(new File(WORK_DIR + "/.git")));
+        InputStream zip = LocalRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
+        new UnZiper().act(zip, REPO);
+        git = new Git(new FileRepository(new File(RepoTest.LOCAL_DIR + "/.git")));
         if (remote) {
+            remoteRepo = new RemoteRepoMock(false);
             configureRemote(remoteRepo.repoUrl);
             git.fetch().call();
         }
-    }
-
-    public Git getGit() {
-        return git;
     }
 
     public void configureRemote(String repoUrl) throws URISyntaxException, IOException, GitAPIException {
@@ -55,27 +49,25 @@ public class LocalRepoMock implements AutoCloseable {
         git.fetch().call();
     }
 
-
-    public void close() throws Exception {
-        remoteRepo.close();
-        git.getRepository().close();
-        git.close();
-        delete(REPO);
-    }
-
-    private void delete(File f) {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles()) {
-                delete(c);
-            }
-        }
-        if (!f.delete()) {
-            throw new RuntimeException("Failed to delete file: " + f);
-        }
-    }
-
     public RemoteRepoMock getRemoteRepo() {
         return remoteRepo;
+    }
+
+    @Override
+    protected File getRepoDir() {
+        return REPO;
+    }
+
+
+    public Git getGit() {
+        return git;
+    }
+
+    public void close() throws Exception {
+        if (remoteRepo != null) {
+            remoteRepo.close();
+        }
+        super.close();
     }
 
 }

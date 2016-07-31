@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.vackosar.gitflowincrementalbuild.control.Property;
-import com.vackosar.gitflowincrementalbuild.mocks.LocalRepoMock;
 import com.vackosar.gitflowincrementalbuild.mocks.RepoTest;
 
 public class IT extends RepoTest {
@@ -126,7 +125,7 @@ public class IT extends RepoTest {
                         "-DgibVersion=" + pluginVersion);
         final Process process = new ProcessBuilder(Stream.concat(command.stream(), args.stream())
                         .collect(Collectors.toList()))
-                        .directory(LocalRepoMock.WORK_DIR.toFile().getAbsoluteFile())
+                        .directory(RepoTest.LOCAL_DIR.toFile().getAbsoluteFile())
                         .start();
         String output = convertStreamToString(process.getInputStream());
         System.out.println(convertStreamToString(process.getErrorStream()));
