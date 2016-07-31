@@ -1,4 +1,4 @@
-package com.vackosar.gitflowincrementalbuild.boundary;
+package com.vackosar.gitflowincrementalbuild.it;
 
 import java.io.IOException;
 import java.util.Arrays;
