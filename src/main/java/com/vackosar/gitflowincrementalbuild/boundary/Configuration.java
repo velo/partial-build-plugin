@@ -43,7 +43,7 @@ public class Configuration {
 
         try {
             makeUpstream = MAKE_UPSTREAM.equals(session.getRequest().getMakeBehavior());
-            Plugin plugin = session.getCurrentProject().getPlugin(PLUGIN_KEY);
+            Plugin plugin = session.getTopLevelProject().getPlugin(PLUGIN_KEY);
             // check properties
             checkProperties(session.getTopLevelProject().getProperties());
             checkPluginConfiguration(plugin);
@@ -70,7 +70,7 @@ public class Configuration {
     }
 
     private Path parseKey(MavenSession session, String keyOptionValue) throws IOException {
-        Path pomDir = session.getCurrentProject().getBasedir().toPath();
+        Path pomDir = session.getTopLevelProject().getBasedir().toPath();
         if (keyOptionValue != null && !keyOptionValue.isEmpty()) {
             return pomDir.resolve(keyOptionValue).toAbsolutePath().toRealPath().normalize();
         }
@@ -78,7 +78,7 @@ public class Configuration {
     }
 
     private Path parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
-        Path pomDir = session.getCurrentProject().getBasedir().toPath();
+        Path pomDir = session.getTopLevelProject().getBasedir().toPath();
         if (outputFileValue != null && !outputFileValue.isEmpty()) {
             return pomDir.resolve(outputFileValue).toAbsolutePath().normalize();
         }

@@ -25,6 +25,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
+import com.vackosar.gitflowincrementalbuild.control.Modules;
 
 @Singleton
 public class UnchangedProjectsRemover {
@@ -47,13 +48,12 @@ public class UnchangedProjectsRemover {
         logProjects(changed, "Changed Artifacts:");
         Set<MavenProject> changedProjects = getAllDependentProjects(changed);
 
-        mavenSession.getCurrentProject().getProperties().setProperty(CHANGED_PROJECTS, joinProjectIds(changedProjects,
-                        new StringJoiner(",")).toString());
+        mavenSession.getAllProjects().forEach(m -> m.getProperties()
+                .setProperty(CHANGED_PROJECTS, joinProjectIds(changedProjects, new StringJoiner(",")).toString()));
+
         if (configuration.writeChanged()) {
-
-
-            File defaultFile = new File(mavenSession.getCurrentProject().getBasedir().getPath() + CHANGED_PROJECTS);
-            Path outputFilePath = configuration.outputFile().orElse(defaultFile.toPath());
+            Path defaultPath = Modules.getPath(mavenSession.getTopLevelProject()).resolve(CHANGED_PROJECTS);
+            Path outputFilePath = configuration.outputFile().orElse(defaultPath);
             writeChangedProjectsToFile(changedProjects, outputFilePath.toFile());
         }
 

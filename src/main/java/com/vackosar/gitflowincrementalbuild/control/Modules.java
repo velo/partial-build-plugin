@@ -21,7 +21,7 @@ public class Modules {
                 .collect(Collectors.toMap(Modules::getPath, project -> project));
     }
 
-    private static Path getPath(MavenProject project) {
+    public static Path getPath(MavenProject project) {
         try {
             return project.getBasedir().toPath().normalize().toAbsolutePath().toRealPath();
         } catch (IOException e) {
