@@ -21,14 +21,15 @@ public class ChangedProjects {
     @Inject private Modules modules;
 
     public Set<MavenProject> get() throws GitAPIException, IOException {
+        Map<Path, MavenProject> pathMap = modules.createPathMap();
+        // find changed projects
         return differentFiles.get().stream()
-                .map(this::findProject)
+                .map(p -> findProject(p, pathMap))
                 .filter(project -> project != null)
                 .collect(Collectors.toSet());
     }
 
-    private MavenProject findProject(Path diffPath) {
-        Map<Path, MavenProject> map = modules.createPathMap();
+    private MavenProject findProject(final Path diffPath, Map<Path, MavenProject> map) {
         Path path = diffPath;
         while (path != null && ! map.containsKey(path)) {
             path = path.getParent();
