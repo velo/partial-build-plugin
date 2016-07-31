@@ -9,7 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Set;
+import java.util.Collection;
 import java.util.StringJoiner;
 
 import org.apache.maven.model.Plugin;
@@ -34,7 +34,7 @@ public class PluginUtils {
         return null;
     }
 
-    public static void writeChangedProjectsToFile(Set<MavenProject> projects, File outputFile, StringJoiner joiner) {
+    public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile, StringJoiner joiner) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
             writer.write(joinProjectIds(projects, joiner).toString());
         } catch (IOException e) {
@@ -42,11 +42,11 @@ public class PluginUtils {
         }
     }
 
-    public static void writeChangedProjectsToFile(Set<MavenProject> projects, File outputFile) {
+    public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile) {
         writeChangedProjectsToFile(projects, outputFile, new StringJoiner("\n"));
     }
 
-    public static StringJoiner joinProjectIds(Set<MavenProject> projects, StringJoiner joiner) {
+    public static StringJoiner joinProjectIds(Collection<MavenProject> projects, StringJoiner joiner) {
         for (MavenProject changedProject : projects) {
             joiner.add(changedProject.getGroupId() + ":" + changedProject.getArtifactId());
         }

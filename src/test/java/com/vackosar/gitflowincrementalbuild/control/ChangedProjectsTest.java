@@ -30,7 +30,10 @@ public class ChangedProjectsTest extends RepoTest {
         ));
         final Set<Path> actual = Guice.createInjector(new GuiceModule(new ConsoleLogger(), MavenSessionMock.get()))
                 .getInstance(ChangedProjects.class).get().stream()
-                .map(MavenProject::getBasedir).map(File::toPath).map(LocalRepoMock.WORK_DIR.resolve("parent")::relativize).collect(Collectors.toSet());
+                .map(MavenProject::getBasedir)
+                .map(File::toPath)
+                .map(LocalRepoMock.WORK_DIR.resolve("parent")::relativize)
+                .collect(Collectors.toSet());
         Assert.assertEquals(expected, actual);
     }
 }
