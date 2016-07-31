@@ -3,12 +3,9 @@ package com.vackosar.gitflowincrementalbuild.boundary;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.joinProjectIds;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChangedProjectsToFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -64,7 +61,9 @@ public class UnchangedProjectsRemover {
                 mavenSession.getGoals().clear();
                 mavenSession.getGoals().add("validate");
             } else {
-                mavenSession.setProjects(new ArrayList<>(rebuildProjects));
+                mavenSession.setProjects(mavenSession.getProjects().stream()
+                        .filter(rebuildProjects::contains)
+                        .collect(Collectors.toList()));
             }
         } else {
             mavenSession.getProjects().stream()
@@ -74,11 +73,10 @@ public class UnchangedProjectsRemover {
     }
 
     public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
-        Set<MavenProject> changedProjects = new HashSet<>();
         mavenSession.getProjects().stream()
                         .filter(changed::contains)
-                        .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changedProjects));
-        return changedProjects;
+                        .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changed));
+        return changed;
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
@@ -116,22 +114,13 @@ public class UnchangedProjectsRemover {
     }
 
     private void getAllDependents(List<MavenProject> projects, MavenProject project, Set<MavenProject> dependents) {
-        dependents.add(project);
-        //        projects.stream()
-        //                        .filter(p -> isDependentOf(p,project) || project.equals(p.getParent()))
-        //                        .filter(p -> !dependents.contains(p))
-        //                        .forEach(p -> {
-        //                            dependents.add(p);
-        //                            getAllDependents(projects, p, dependents);
-        //                        });
-        for (MavenProject possibleDependent : projects) {
-            if (isDependentOf(possibleDependent, project) || project.equals(possibleDependent.getParent())) {
-                if (!dependents.contains(possibleDependent)) {
+        projects.stream()
+                .filter(p -> isDependentOf(p, project) || project.equals(p.getParent()))
+                .filter(p -> !dependents.contains(p))
+                .forEachOrdered(possibleDependent -> {
                     dependents.add(possibleDependent);
                     getAllDependents(projects, possibleDependent, dependents);
-                }
-            }
-        }
+                });
     }
 
     private Stream<MavenProject> ifMakeUpstreamGetDependencies(MavenProject mavenProject) {
