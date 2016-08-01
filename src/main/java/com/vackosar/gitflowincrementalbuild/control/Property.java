@@ -14,7 +14,8 @@ public enum Property {
     fetchBaseBranch("false"),
     fetchReferenceBranch("false"),
     outputFile("changed.projects"),
-    writeChanged("true"),;
+    writeChanged("true"),
+    ignoreChanged(""),;
 
     public static final String PREFIX = "gib.";
 

@@ -9,14 +9,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringJoiner;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PluginUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(PluginUtils.class);
 
     public static String extractPluginConfigValue(String parameter, Plugin plugin) {
         String value = extractConfigValue(parameter, plugin.getConfiguration());
@@ -34,11 +42,12 @@ public class PluginUtils {
         return null;
     }
 
-    public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile, StringJoiner joiner) {
+    public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile,
+            StringJoiner joiner) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
             writer.write(joinProjectIds(projects, joiner).toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Error writing changed projects to file on path :" + outputFile.getPath(), e);
         }
     }
 
@@ -51,5 +60,13 @@ public class PluginUtils {
             joiner.add(changedProject.getGroupId() + ":" + changedProject.getArtifactId());
         }
         return joiner;
+    }
+
+    public static List<String> separatePattern(String patternString) {
+        if (patternString.isEmpty()) {
+            return Collections.emptyList();
+        }
+        patternString = StringUtils.deleteWhitespace(patternString);
+        return Arrays.asList(patternString.split(","));
     }
 }

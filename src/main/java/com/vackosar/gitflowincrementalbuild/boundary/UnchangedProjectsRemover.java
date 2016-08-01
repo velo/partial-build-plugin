@@ -1,24 +1,28 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
+import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.getAllDependencies;
+import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.getAllDependents;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.joinProjectIds;
+import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.separatePattern;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChangedProjectsToFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
@@ -42,8 +46,19 @@ public class UnchangedProjectsRemover {
     public void act() throws GitAPIException, IOException {
         Set<MavenProject> changed = changedProjects.get();
         printDelimiter();
-        logProjects(changed, "Changed Artifacts:");
-        Set<MavenProject> changedProjects = getAllDependentProjects(changed);
+        logProjects(changed, "Changed Projects:");
+
+        final Set<MavenProject> ignored = getIgnoredProjects();
+        if (!ignored.isEmpty()) {
+            printDelimiter();
+            logProjects(ignored, "Ignoring Changes in Projects:");
+        }
+
+        final Set<MavenProject> changedIgnored = changed.stream()
+                .filter(p -> !ignored.contains(p))
+                .collect(Collectors.toSet());
+
+        final Set<MavenProject> changedProjects = getAllDependentProjects(changedIgnored);
 
         mavenSession.getAllProjects().forEach(m -> m.getProperties()
                 .setProperty(CHANGED_PROJECTS, joinProjectIds(changedProjects, new StringJoiner(",")).toString()));
@@ -55,7 +70,8 @@ public class UnchangedProjectsRemover {
         }
 
         if (!configuration.buildAll()) {
-            Set<MavenProject> rebuildProjects = getRebuildProjects(changedProjects);
+            Set<MavenProject> rebuildProjects = getRebuildProjects(changedIgnored);
+
             if (rebuildProjects.isEmpty()) {
                 logger.info("No changed artifacts to build. Executing validate goal only.");
                 mavenSession.getGoals().clear();
@@ -67,22 +83,33 @@ public class UnchangedProjectsRemover {
             }
         } else {
             mavenSession.getProjects().stream()
-                            .filter(p -> !changedProjects.contains(p))
-                            .forEach(this::ifSkipDependenciesTest);
+                    .filter(p -> !changedIgnored.contains(p))
+                    .forEach(this::ifSkipDependenciesTest);
         }
     }
 
     public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
         mavenSession.getProjects().stream()
-                        .filter(changed::contains)
-                        .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changed));
+                .filter(changed::contains)
+                .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changed));
         return changed;
+    }
+
+    private Set<MavenProject> getIgnoredProjects() {
+        if (Strings.isNullOrEmpty(configuration.ignoreChanged())) {
+            return Collections.emptySet();
+        }
+        List<String> patterns = separatePattern(configuration.ignoreChanged());
+        final PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
+        return mavenSession.getProjects().stream()
+                .filter(p -> filter.include(p.getArtifact()))
+                .collect(Collectors.toSet());
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
         if (configuration.makeUpstream()) {
-            return Stream.concat(changedProjects.stream(), collectDependencies(changedProjects)).collect(Collectors
-                            .toSet());
+            return Stream.concat(changedProjects.stream(), collectDependencies(changedProjects))
+                    .collect(Collectors.toSet());
         } else {
             return changedProjects;
         }
@@ -90,9 +117,9 @@ public class UnchangedProjectsRemover {
 
     private Stream<MavenProject> collectDependencies(Set<MavenProject> changedProjects) {
         return changedProjects.stream()
-                        .flatMap(this::ifMakeUpstreamGetDependencies)
-                        .filter(p -> !changedProjects.contains(p))
-                        .map(this::ifSkipDependenciesTest);
+                .flatMap(this::ifMakeUpstreamGetDependencies)
+                .filter(p -> !changedProjects.contains(p))
+                .map(this::ifSkipDependenciesTest);
     }
 
     private MavenProject ifSkipDependenciesTest(MavenProject mavenProject) {
@@ -102,10 +129,14 @@ public class UnchangedProjectsRemover {
         return mavenProject;
     }
 
+    private Stream<MavenProject> ifMakeUpstreamGetDependencies(MavenProject mavenProject) {
+        return getAllDependencies(mavenSession.getProjects(), mavenProject).stream();
+    }
+
     private void logProjects(Collection<MavenProject> projects, String title) {
         logger.info(title);
         logger.info("");
-        projects.stream().map(MavenProject::getArtifactId).forEach(logger::info);
+        projects.stream().map(MavenProject::getName).forEach(logger::info);
         logger.info("");
     }
 
@@ -113,40 +144,4 @@ public class UnchangedProjectsRemover {
         logger.info("------------------------------------------------------------------------");
     }
 
-    private void getAllDependents(List<MavenProject> projects, MavenProject project, Set<MavenProject> dependents) {
-        projects.stream()
-                .filter(p -> isDependentOf(p, project) || project.equals(p.getParent()))
-                .filter(p -> !dependents.contains(p))
-                .forEachOrdered(possibleDependent -> {
-                    dependents.add(possibleDependent);
-                    getAllDependents(projects, possibleDependent, dependents);
-                });
-    }
-
-    private Stream<MavenProject> ifMakeUpstreamGetDependencies(MavenProject mavenProject) {
-        return getAllDependencies(mavenSession.getProjects(), mavenProject).stream();
-    }
-
-    private Set<MavenProject> getAllDependencies(List<MavenProject> projects, MavenProject project) {
-        Set<MavenProject> dependencies = project.getDependencies().stream()
-                        .map(d -> convert(projects, d)).filter(Optional::isPresent).map(Optional::get)
-                        .flatMap(p -> getAllDependencies(projects, p).stream())
-                        .collect(Collectors.toSet());
-        dependencies.add(project);
-        return dependencies;
-    }
-
-    private boolean equals(MavenProject project, Dependency dependency) {
-        return dependency.getArtifactId().equals(project.getArtifactId())
-                        && dependency.getGroupId().equals(project.getGroupId())
-                        && dependency.getVersion().equals(project.getVersion());
-    }
-
-    private Optional<MavenProject> convert(List<MavenProject> projects, Dependency dependency) {
-        return projects.stream().filter(p -> equals(p, dependency)).findFirst();
-    }
-
-    private boolean isDependentOf(MavenProject possibleDependent, MavenProject project) {
-        return possibleDependent.getDependencies().stream().anyMatch(d -> equals(project, d));
-    }
 }

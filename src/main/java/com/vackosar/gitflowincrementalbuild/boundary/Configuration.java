@@ -37,6 +37,7 @@ public class Configuration {
     private final boolean fetchReferenceBranch;
     private final Path outputFile;
     private final boolean writeChanged;
+    private final String ignoreChanged;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -63,6 +64,7 @@ public class Configuration {
             fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
             outputFile = parseOutputFile(session, Property.outputFile.getValue());
             writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
+            ignoreChanged = Property.ignoreChanged.getValue();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -161,6 +163,10 @@ public class Configuration {
         return writeChanged;
     }
 
+    public String ignoreChanged() {
+        return ignoreChanged;
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
@@ -169,14 +175,16 @@ public class Configuration {
                 ", referenceBranch='" + referenceBranch + '\'' +
                 ", baseBranch='" + baseBranch + '\'' +
                 ", uncommited=" + uncommited +
+                ", untracked=" + untracked +
                 ", makeUpstream=" + makeUpstream +
                 ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
                 ", buildAll=" + buildAll +
                 ", compareToMergeBase=" + compareToMergeBase +
                 ", fetchBaseBranch=" + fetchBaseBranch +
                 ", fetchReferenceBranch=" + fetchReferenceBranch +
-                ", outputFile='" + outputFile + '\'' +
+                ", outputFile=" + outputFile +
                 ", writeChanged=" + writeChanged +
+                ", ignoreChanged='" + ignoreChanged + '\'' +
                 '}';
     }
 }

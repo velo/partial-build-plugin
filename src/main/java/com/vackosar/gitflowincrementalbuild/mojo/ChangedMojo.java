@@ -32,7 +32,7 @@ import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
 import com.vackosar.gitflowincrementalbuild.utils.MavenToPlexusLogAdapter;
 
 @Mojo(name = "writeChanged", defaultPhase = LifecyclePhase.VALIDATE,
-                threadSafe = true, inheritByDefault = false, aggregator = true)
+        threadSafe = true, inheritByDefault = false, aggregator = true)
 public class ChangedMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}")
@@ -80,6 +80,9 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = PREFIX + "writeChanged", defaultValue = "false")
     public String writeChanged;
 
+    @Parameter(required = false, property = PREFIX + "ignoreChanged")
+    public String ignoreChanged;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -98,7 +101,7 @@ public class ChangedMojo extends AbstractMojo {
             Set<MavenProject> allDependentProjects = projectsRemover.getAllDependentProjects(changed);
             writeChangedProjectsToFile(allDependentProjects, new File(outputFile));
             session.getAllProjects().forEach(m -> m.getProperties()
-                            .setProperty(CHANGED_PROJECTS, joinProjectIds(changed, new StringJoiner(",")).toString()));
+                    .setProperty(CHANGED_PROJECTS, joinProjectIds(changed, new StringJoiner(",")).toString()));
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
         }
