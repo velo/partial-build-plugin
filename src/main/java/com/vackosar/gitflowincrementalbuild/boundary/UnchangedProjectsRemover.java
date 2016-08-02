@@ -1,7 +1,7 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
+import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.collectAllDependents;
 import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.getAllDependencies;
-import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.getAllDependents;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.joinProjectIds;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.separatePattern;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChangedProjectsToFile;
@@ -95,7 +95,7 @@ public class UnchangedProjectsRemover {
     public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
         mavenSession.getProjects().stream()
                 .filter(changed::contains)
-                .forEach(p -> getAllDependents(mavenSession.getProjects(), p, changed));
+                .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
         return changed;
     }
 

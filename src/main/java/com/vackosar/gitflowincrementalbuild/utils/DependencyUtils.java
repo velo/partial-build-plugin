@@ -21,13 +21,14 @@ public class DependencyUtils {
         return dependencies;
     }
 
-    public static void getAllDependents(List<MavenProject> projects, MavenProject project, Set<MavenProject> dependents) {
+    public static void collectAllDependents(List<MavenProject> projects, MavenProject project,
+            Set<MavenProject> dependents) {
         projects.stream()
                 .filter(p -> isDependentOf(p, project) || project.equals(p.getParent()))
                 .filter(p -> !dependents.contains(p))
                 .forEachOrdered(possibleDependent -> {
                     dependents.add(possibleDependent);
-                    getAllDependents(projects, possibleDependent, dependents);
+                    collectAllDependents(projects, possibleDependent, dependents);
                 });
     }
 
