@@ -60,13 +60,17 @@ public class UnchangedProjectsRemover {
 
         final Set<MavenProject> changedProjects = getAllDependentProjects(changedIgnored);
 
+        final List<MavenProject> sortedChanged = mavenSession.getProjects().stream()
+                .filter(changedProjects::contains)
+                .collect(Collectors.toList());
+
         mavenSession.getAllProjects().forEach(m -> m.getProperties()
-                .setProperty(CHANGED_PROJECTS, joinProjectIds(changedProjects, new StringJoiner(",")).toString()));
+                .setProperty(CHANGED_PROJECTS, joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
 
         if (configuration.writeChanged()) {
             Path defaultPath = Modules.getPath(mavenSession.getTopLevelProject()).resolve(CHANGED_PROJECTS);
             Path outputFilePath = configuration.outputFile().orElse(defaultPath);
-            writeChangedProjectsToFile(changedProjects, outputFilePath.toFile());
+            writeChangedProjectsToFile(sortedChanged, outputFilePath.toFile());
         }
 
         if (!configuration.buildAll()) {

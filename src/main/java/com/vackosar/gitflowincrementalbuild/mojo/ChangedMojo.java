@@ -10,8 +10,10 @@ import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChange
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -99,9 +101,14 @@ public class ChangedMojo extends AbstractMojo {
         try {
             Set<MavenProject> changed = changedProjects.get();
             Set<MavenProject> allDependentProjects = projectsRemover.getAllDependentProjects(changed);
-            writeChangedProjectsToFile(allDependentProjects, new File(outputFile));
-            session.getAllProjects().forEach(m -> m.getProperties()
-                    .setProperty(CHANGED_PROJECTS, joinProjectIds(changed, new StringJoiner(",")).toString()));
+
+            final List<MavenProject> sortedChanged = session.getProjects().stream()
+                    .filter(allDependentProjects::contains)
+                    .collect(Collectors.toList());
+
+            writeChangedProjectsToFile(sortedChanged, new File(outputFile));
+            session.getProjects().forEach(m -> m.getProperties()
+                    .setProperty(CHANGED_PROJECTS, joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
         }
