@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
@@ -110,13 +109,12 @@ public class DifferentFiles {
     }
 
     private RevCommit getBranchHead(String branchName) throws IOException {
-        final Map<String, Ref> allRefs = git.getRepository().getAllRefs();
         final RevWalk walk = new RevWalk(git.getRepository());
-        Ref ref = allRefs.get(branchName);
-        if (ref == null) {
-            throw new IllegalArgumentException("Git branch of name '" + branchName + "' not found.");
+        ObjectId resolvedId = git.getRepository().resolve(branchName);
+        if (resolvedId == null) {
+            throw new IllegalArgumentException("Git rev str '" + branchName + "' not found.");
         }
-        RevCommit commit = walk.parseCommit(ref.getObjectId());
+        RevCommit commit = walk.parseCommit(resolvedId);
         walk.close();
         logger.info("Head of branch " + branchName + " is commit of id: " + commit.getId());
         return commit;
