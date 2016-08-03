@@ -59,7 +59,7 @@ public class UnchangedProjectsRemover {
                 .filter(changedProjects::contains)
                 .collect(Collectors.toList());
 
-        mavenSession.getAllProjects().forEach(m -> m.getProperties()
+        mavenSession.getProjects().forEach(m -> m.getProperties()
                 .setProperty(CHANGED_PROJECTS, joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
 
         if (configuration.writeChanged()) {
