@@ -1,17 +1,25 @@
 package com.vackosar.gitflowincrementalbuild.boundary;
 
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.extractPluginConfigValue;
+import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.separatePattern;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.vackosar.gitflowincrementalbuild.control.Property;
@@ -37,7 +45,9 @@ public class Configuration {
     private final boolean fetchReferenceBranch;
     private final Path outputFile;
     private final boolean writeChanged;
-    private final String ignoreChanged;
+    private final String ignoreChangedPattern;
+
+    private final Set<MavenProject> ignoredProjects;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -64,7 +74,8 @@ public class Configuration {
             fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
             outputFile = parseOutputFile(session, Property.outputFile.getValue());
             writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
-            ignoreChanged = Property.ignoreChanged.getValue();
+            ignoreChangedPattern = Property.ignoreChanged.getValue();
+            ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -77,6 +88,17 @@ public class Configuration {
             return pomDir.resolve(keyOptionValue).toAbsolutePath().toRealPath().normalize();
         }
         return null;
+    }
+
+    private Set<MavenProject> getIgnoredProjects(MavenSession session, String ignoreChangedPattern) {
+        if (Strings.isNullOrEmpty(ignoreChangedPattern)) {
+            return Collections.emptySet();
+        }
+        List<String> patterns = separatePattern(ignoreChangedPattern);
+        final PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
+        return session.getProjects().stream()
+                .filter(p -> filter.include(p.getArtifact()))
+                .collect(Collectors.toSet());
     }
 
     private Path parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
@@ -163,8 +185,12 @@ public class Configuration {
         return writeChanged;
     }
 
-    public String ignoreChanged() {
-        return ignoreChanged;
+    public String ignoreChangedPattern() {
+        return ignoreChangedPattern;
+    }
+
+    public Set<MavenProject> getIgnoredProjects() {
+        return ignoredProjects;
     }
 
     @Override
@@ -184,7 +210,7 @@ public class Configuration {
                 ", fetchReferenceBranch=" + fetchReferenceBranch +
                 ", outputFile=" + outputFile +
                 ", writeChanged=" + writeChanged +
-                ", ignoreChanged='" + ignoreChanged + '\'' +
+                ", ignoreChangedPattern='" + ignoreChangedPattern + '\'' +
                 '}';
     }
 }

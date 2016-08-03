@@ -95,8 +95,9 @@ public class ChangedMojo extends AbstractMojo {
         Injector injector = Guice.createInjector(new GuiceModule(new MavenToPlexusLogAdapter(getLog()), session));
         UnchangedProjectsRemover projectsRemover = injector.getInstance(UnchangedProjectsRemover.class);
         ChangedProjects changedProjects = injector.getInstance(ChangedProjects.class);
+        Configuration configuration = injector.getInstance(Configuration.class);
 
-        getLog().info(injector.getInstance(Configuration.class).toString());
+        getLog().info(configuration.toString());
 
         try {
             Set<MavenProject> changed = changedProjects.get();

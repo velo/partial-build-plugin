@@ -3,13 +3,11 @@ package com.vackosar.gitflowincrementalbuild.boundary;
 import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.collectAllDependents;
 import static com.vackosar.gitflowincrementalbuild.utils.DependencyUtils.getAllDependencies;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.joinProjectIds;
-import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.separatePattern;
 import static com.vackosar.gitflowincrementalbuild.utils.PluginUtils.writeChangedProjectsToFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -18,11 +16,9 @@ import java.util.stream.Stream;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.vackosar.gitflowincrementalbuild.control.ChangedProjects;
@@ -48,17 +44,16 @@ public class UnchangedProjectsRemover {
         printDelimiter();
         logProjects(changed, "Changed Projects:");
 
-        final Set<MavenProject> ignored = getIgnoredProjects();
+        final Set<MavenProject> ignored = configuration.getIgnoredProjects();
         if (!ignored.isEmpty()) {
             printDelimiter();
-            logProjects(ignored, "Ignoring Changes in Projects:");
+            logProjects(ignored, "Excluded Projects:");
         }
 
-        final Set<MavenProject> changedIgnored = changed.stream()
-                .filter(p -> !ignored.contains(p))
-                .collect(Collectors.toSet());
+        // do not write ignored projects as changed
+        changed.removeAll(ignored);
 
-        final Set<MavenProject> changedProjects = getAllDependentProjects(changedIgnored);
+        final Set<MavenProject> changedProjects = getAllDependentProjects(changed);
 
         final List<MavenProject> sortedChanged = mavenSession.getProjects().stream()
                 .filter(changedProjects::contains)
@@ -73,9 +68,11 @@ public class UnchangedProjectsRemover {
             writeChangedProjectsToFile(sortedChanged, outputFilePath.toFile());
         }
 
-        if (!configuration.buildAll()) {
-            Set<MavenProject> rebuildProjects = getRebuildProjects(changedIgnored);
+        // add ignored projects to build
+        changed.addAll(ignored);
 
+        if (!configuration.buildAll()) {
+            Set<MavenProject> rebuildProjects = getRebuildProjects(changed);
             if (rebuildProjects.isEmpty()) {
                 logger.info("No changed artifacts to build. Executing validate goal only.");
                 mavenSession.getGoals().clear();
@@ -87,7 +84,7 @@ public class UnchangedProjectsRemover {
             }
         } else {
             mavenSession.getProjects().stream()
-                    .filter(p -> !changedIgnored.contains(p))
+                    .filter(p -> !changed.contains(p))
                     .forEach(this::ifSkipDependenciesTest);
         }
     }
@@ -97,17 +94,6 @@ public class UnchangedProjectsRemover {
                 .filter(changed::contains)
                 .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
         return changed;
-    }
-
-    private Set<MavenProject> getIgnoredProjects() {
-        if (Strings.isNullOrEmpty(configuration.ignoreChanged())) {
-            return Collections.emptySet();
-        }
-        List<String> patterns = separatePattern(configuration.ignoreChanged());
-        final PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
-        return mavenSession.getProjects().stream()
-                .filter(p -> filter.include(p.getArtifact()))
-                .collect(Collectors.toSet());
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
