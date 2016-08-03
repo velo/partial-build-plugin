@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.function.Function;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
@@ -25,6 +26,9 @@ import org.slf4j.LoggerFactory;
 public class PluginUtils {
 
     private static Logger logger = LoggerFactory.getLogger(PluginUtils.class);
+
+    private static Function<MavenProject, String> projectIdWriter = project ->
+            project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion();
 
     public static String extractPluginConfigValue(String parameter, Plugin plugin) {
         String value = extractConfigValue(parameter, plugin.getConfiguration());
@@ -45,7 +49,7 @@ public class PluginUtils {
     public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile,
             StringJoiner joiner) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
-            writer.write(joinProjectIds(projects, joiner).toString());
+            writer.write(joinProjectIds(projects, joiner, projectIdWriter).toString());
         } catch (IOException e) {
             logger.warn("Error writing changed projects to file on path :" + outputFile.getPath(), e);
         }
@@ -58,6 +62,14 @@ public class PluginUtils {
     public static StringJoiner joinProjectIds(Collection<MavenProject> projects, StringJoiner joiner) {
         for (MavenProject changedProject : projects) {
             joiner.add(changedProject.getGroupId() + ":" + changedProject.getArtifactId());
+        }
+        return joiner;
+    }
+
+    public static StringJoiner joinProjectIds(Collection<MavenProject> projects, StringJoiner joiner,
+            Function<MavenProject, String> projectIdWriter) {
+        for (MavenProject changedProject : projects) {
+            joiner.add(projectIdWriter.apply(changedProject));
         }
         return joiner;
     }
