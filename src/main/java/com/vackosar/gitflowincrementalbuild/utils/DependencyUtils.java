@@ -26,9 +26,11 @@ public class DependencyUtils {
         projects.stream()
                 .filter(p -> isDependentOf(p, project) || project.equals(p.getParent()))
                 .filter(p -> !dependents.contains(p))
-                .forEachOrdered(possibleDependent -> {
-                    dependents.add(possibleDependent);
-                    collectAllDependents(projects, possibleDependent, dependents);
+                .forEach(p -> {
+                    dependents.add(p);
+                    if (!project.equals(p.getParent())) {
+                        collectAllDependents(projects, p, dependents);
+                    }
                 });
     }
 

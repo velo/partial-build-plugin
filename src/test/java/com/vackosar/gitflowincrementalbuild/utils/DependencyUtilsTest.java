@@ -26,6 +26,8 @@ public class DependencyUtilsTest {
     MavenProject m3;
     MavenProject m4;
     MavenProject m5;
+    MavenProject m6;
+    MavenProject m7;
 
     List<MavenProject> allProjects;
 
@@ -37,6 +39,8 @@ public class DependencyUtilsTest {
         m3 = new MavenProject();
         m4 = new MavenProject();
         m5 = new MavenProject();
+        m6 = new MavenProject();
+        m7 = new MavenProject();
 
         parent.setArtifactId("parent");
         parent.setGroupId(GROUP_ID);
@@ -85,33 +89,95 @@ public class DependencyUtilsTest {
         d5.setGroupId(GROUP_ID);
         d5.setVersion(VERSION);
 
-        //        m5 -> m2
-        m5.setDependencies(Arrays.asList(d2));
-        //        m3 -> m2
-        m3.setDependencies(Arrays.asList(d2));
-        //        m1 -> m4
-        //        m1 -> m3
-        m1.setDependencies(Arrays.asList(d4, d3));
+        m6.setParent(parent);
+        m6.setGroupId(GROUP_ID);
+        m6.setArtifactId("m6");
+        m6.setVersion(VERSION);
+        Dependency d6 = new Dependency();
+        d6.setArtifactId("m6");
+        d6.setGroupId(GROUP_ID);
+        d6.setVersion(VERSION);
 
+        m7.setParent(parent);
+        m7.setGroupId(GROUP_ID);
+        m7.setArtifactId("m7");
+        m7.setVersion(VERSION);
+        Dependency d7 = new Dependency();
+        d7.setArtifactId("m7");
+        d7.setGroupId(GROUP_ID);
+        d7.setVersion(VERSION);
+
+        //        m5 --> m2
+        m5.setDependencies(Arrays.asList(d2));
+        //        m3 --> m2
+        //        p <!-- m3
+        m3.setDependencies(Arrays.asList(d2));
+        //        m1 --> m4
+        //        m1 --> m3
+        //        p <!-- m1
+        m1.setDependencies(Arrays.asList(d4, d3));
+        //        m6 --> m7
+        //        p <!-- m6
+        m6.setDependencies(Arrays.asList(d7));
+        //        p --> d1
         parent.setDependencies(Arrays.asList(d1));
 
-        allProjects = Arrays.asList(parent, m1, m2, m3, m4, m5);
+        allProjects = Arrays.asList(parent, m1, m2, m3, m4, m5, m6, m7);
+    }
+
+    @Test
+    public void collectAllDependents() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m2, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m5, m6, m7).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void collectNoDependents() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m5, dependents);
+        assertThat(dependents).isEqualTo(Collections.emptySet());
+    }
+
+    @Test
+    public void collectDependentsTransitiveM1() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m1, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void collectDependentsTransitiveM3() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m3, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void collectTransitiveDependents() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m4, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void collectTransitiveDependentsParent() {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, parent, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(m1, m2, m3, m6, m7).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void collectTransitiveDependentsDontFollowParent() throws Exception {
+        HashSet<MavenProject> dependents = new HashSet<>();
+        DependencyUtils.collectAllDependents(allProjects, m7, dependents);
+        assertThat(dependents).isEqualTo(Stream.of(m6).collect(Collectors.toSet()));
     }
 
     @Test
     public void getAllDependencies() throws Exception {
         Set<MavenProject> dependencies = DependencyUtils.getAllDependencies(allProjects, m1);
         assertThat(dependencies).isEqualTo(Stream.of(m1, m3, m4, m2).collect(Collectors.toSet()));
-    }
-
-    @Test
-    public void collectAllDependents() throws Exception {
-        HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m1, dependents);
-        assertThat(dependents).isEqualTo(Stream.of(m1, m2, m3, m5, parent).collect(Collectors.toSet()));
-        dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m5, dependents);
-        assertThat(dependents).isEqualTo(Collections.emptySet());
     }
 
     @Test
