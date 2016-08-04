@@ -1,6 +1,3 @@
-/*
- * Copyright (C) by Courtanet, All Rights Reserved.
- */
 package com.vackosar.gitflowincrementalbuild.mojo;
 
 import static com.vackosar.gitflowincrementalbuild.boundary.UnchangedProjectsRemover.CHANGED_PROJECTS;

@@ -1,6 +1,3 @@
-/*
- * Copyright (C) by Courtanet, All Rights Reserved.
- */
 package com.vackosar.gitflowincrementalbuild.utils;
 
 import org.apache.maven.plugin.logging.Log;

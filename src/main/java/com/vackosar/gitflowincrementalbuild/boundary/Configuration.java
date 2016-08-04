@@ -134,7 +134,7 @@ public class Configuration {
     }
 
     public Optional<Path> key() {
-        return Optional.of(key);
+        return Optional.ofNullable(key);
     }
 
     public String referenceBranch() {
@@ -178,7 +178,7 @@ public class Configuration {
     }
 
     public Optional<Path> outputFile() {
-        return Optional.of(outputFile);
+        return Optional.ofNullable(outputFile);
     }
 
     public boolean writeChanged() {
