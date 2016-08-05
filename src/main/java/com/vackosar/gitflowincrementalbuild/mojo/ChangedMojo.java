@@ -98,6 +98,8 @@ public class ChangedMojo extends AbstractMojo {
 
         try {
             Set<MavenProject> changed = changedProjects.get();
+            Set<MavenProject> ignoredProjects = configuration.getIgnoredProjects();
+            changed.removeAll(ignoredProjects);
             Set<MavenProject> allDependentProjects = projectsRemover.getAllDependentProjects(changed);
 
             final List<MavenProject> sortedChanged = session.getProjects().stream()
