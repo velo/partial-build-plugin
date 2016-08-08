@@ -21,8 +21,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.vackosar.gitflowincrementalbuilder</groupId>
-                <artifactId>gitflow-incremental-builder</artifactId>
+                <groupId>com.lesfurets</groupId>
+                <artifactId>partial-build-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>

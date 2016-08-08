@@ -3,21 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.vackosar.gitflowincrementalbuilder</groupId>
-  <artifactId>gitflow-incremental-builder</artifactId>
+  <groupId>com.lesfurets</groupId>
+  <artifactId>partial-build-plugin</artifactId>
   <version>2.3-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>A maven extension for incremental building of multi-module projects when using Git Flow.</description>
-  <url>https://github.com/vackosar/gitflow-incremental-builder</url>
+  <description>
+    A maven plugin for partially building multi-module projects using Git feature branching.
+  </description>
+  <url>https://github.com/lesfurets/partial-build-plugin</url>
   <issueManagement>
-    <url>https://github.com/vackosar/gitflow-incremental-builder/issues</url>
+    <url>https://github.com/lesfurets/partial-build-plugin/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
   <scm>
-    <url>https://github.com/vackosar/gitflow-incremental-builder</url>
-    <connection>scm:git:git://github.com/vackosar/gitflow-incremental-builder.git</connection>
-    <developerConnection>scm:git:git@github.com:vackosar/gitflow-incremental-builder.git</developerConnection>
+    <url>https://github.com/lesfurets/partial-build-plugin</url>
+    <connection>scm:git:git://github.com/lesfurets/partial-build-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com/lesfurets/partial-build-plugin.git</developerConnection>
   </scm>
   <licenses>
     <license>
@@ -27,6 +29,14 @@
     </license>
   </licenses>
   <developers>
+    <developer>
+      <email>ozangunalp@gmail.com</email>
+      <name>Ozan Gunalp</name>
+      <url>https://github.com/ozangunalp</url>
+      <id>ozangunalp</id>
+      <organization>lesfurets.com</organization>
+      <organizationUrl>https://github.com/lesfurets</organizationUrl>
+    </developer>
     <developer>
       <name>Vaclav Kosar</name>
       <url>https://github.com/vackosar</url>
@@ -214,7 +224,7 @@
         <artifactId>maven-plugin-plugin</artifactId>
         <version>3.4</version>
         <configuration>
-          <goalPrefix>gitflow</goalPrefix>
+          <goalPrefix>partial</goalPrefix>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
         <executions>
@@ -234,4 +244,4 @@
       </plugin>
     </plugins>
   </build>
-</project>
+</project><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- -->

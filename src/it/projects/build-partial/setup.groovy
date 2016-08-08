@@ -1,10 +1,10 @@
+import static java.nio.charset.StandardCharsets.UTF_8
+
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.charset.Charset
 
-import com.vackosar.gitflowincrementalbuild.mocks.UnZiper
-
-import static java.nio.charset.StandardCharsets.UTF_8
+import com.lesfurets.maven.partial.mocks.UnZiper
 
 def project = new File(projectDir as String)
 def zip = new File(project, "src/it/project.zip")

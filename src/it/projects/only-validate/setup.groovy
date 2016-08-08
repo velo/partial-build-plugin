@@ -2,7 +2,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.charset.Charset
 
-import com.vackosar.gitflowincrementalbuild.mocks.UnZiper
+import com.lesfurets.maven.partial.mocks.UnZiper
 
 import static java.nio.charset.StandardCharsets.UTF_8
 
