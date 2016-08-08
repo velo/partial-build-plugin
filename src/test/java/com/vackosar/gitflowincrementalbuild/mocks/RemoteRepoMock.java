@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.transport.Daemon;
@@ -19,14 +21,14 @@ public class RemoteRepoMock extends RepoMock {
     private Daemon server;
     private RepoResolver resolver;
 
-    public RemoteRepoMock(boolean bare) throws IOException {
+    public RemoteRepoMock(boolean bare) throws IOException, URISyntaxException {
         this.bare = bare;
-        InputStream zipStream = RemoteRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
         if (bare) {
             try {delete(REPO);} catch (Exception e) {}
             REPO.mkdir();
         } else {
-            new UnZiper().act(zipStream, REPO);
+            InputStream zip = LocalRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
+            new UnZiper().act(zip, REPO);
         }
         repoUrl = "git://localhost:" + port + "/repo.git";
         start();

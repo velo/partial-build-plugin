@@ -65,17 +65,17 @@ public class DifferentFilesTest extends RepoTest {
     public void list() throws Exception {
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
-                Paths.get(LOCAL_DIR + "/parent/child2/subchild2/src/resources/file2"),
-                Paths.get(LOCAL_DIR + "/parent/child2/subchild2/src/resources/file22"),
-                Paths.get(LOCAL_DIR + "/parent/child3/src/resources/file1"),
-                Paths.get(LOCAL_DIR + "/parent/child4/pom.xml")
+                Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file2"),
+                Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file22"),
+                Paths.get(LOCAL_DIR + "/child3/src/resources/file1"),
+                Paths.get(LOCAL_DIR + "/child4/pom.xml")
                 ));
         Assert.assertEquals(expected, differentFiles.get());
     }
 
     @Test
     public void listInSubdir() throws Exception {
-        Path workDir = LOCAL_DIR.resolve("parent/child2");
+        Path workDir = LOCAL_DIR.resolve("child2");
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
                 workDir.resolve("subchild2/src/resources/file2"),
@@ -94,8 +94,8 @@ public class DifferentFilesTest extends RepoTest {
         Property.baseBranch.setValue(REFS_HEADS_FEATURE_2);
         Property.compareToMergeBase.setValue("true");
         Assert.assertTrue(getInstance().get().stream()
-                .collect(Collectors.toSet()).contains(LOCAL_DIR.resolve("parent/feature2-only-file.txt")));
-        Assert.assertTrue(consoleOut.toString().contains("59dc82fa887d9ca82a0d3d1790c6d767e738e71a"));
+                .collect(Collectors.toSet()).contains(LOCAL_DIR.resolve("feature2-only-file.txt")));
+        Assert.assertTrue(consoleOut.toString().contains("2dae55f63194af320e51c49127ef41ce440b9f7b"));
     }
 
     @Test

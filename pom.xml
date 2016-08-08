@@ -158,6 +158,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.19.1</version>
         <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>
+              src/it
+            </additionalClasspathElement>
+          </additionalClasspathElements>
           <workingDirectory>${project.build.directory}</workingDirectory>
           <systemPropertyVariables>
             <projectVersion>${project.version}</projectVersion>
@@ -166,29 +171,31 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.19.1</version>
+        <artifactId>maven-invoker-plugin</artifactId>
+        <version>2.0.0</version>
+        <configuration>
+          <skipInvocation>${skipTests}</skipInvocation>
+          <addTestClassPath>true</addTestClassPath>
+          <preBuildHookScript>setup.groovy</preBuildHookScript>
+          <postBuildHookScript>verify.groovy</postBuildHookScript>
+          <scriptVariables>
+            <projectDir>${project.basedir}</projectDir>
+            <projectVersion>${project.version}</projectVersion>
+          </scriptVariables>
+          <projectsDirectory>src/it/projects</projectsDirectory>
+          <cloneProjectsTo>${project.build.directory}/it/projects</cloneProjectsTo>
+          <cloneAllFiles>true</cloneAllFiles>
+          <settingsFile>src/it/settings.xml</settingsFile>
+        </configuration>
         <executions>
           <execution>
+            <id>integration-test</id>
             <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
+              <goal>install</goal>
+              <goal>run</goal>
             </goals>
-            <configuration>
-              <skip>true</skip>
-              <workingDirectory>${project.build.directory}</workingDirectory>
-              <systemPropertyVariables>
-                <projectVersion>${project.version}</projectVersion>
-                <buildDir>${project.build.directory}</buildDir>
-              </systemPropertyVariables>
-            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <systemPropertyVariables>
-            <projectVersion>${project.version}</projectVersion>
-          </systemPropertyVariables>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>

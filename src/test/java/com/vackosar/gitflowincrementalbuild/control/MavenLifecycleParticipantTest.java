@@ -1,4 +1,4 @@
-package com.vackosar.gitflowincrementalbuild.boundary;
+package com.vackosar.gitflowincrementalbuild.control;
 
 import java.lang.reflect.Field;
 
@@ -7,6 +7,7 @@ import org.codehaus.plexus.logging.Logger;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.vackosar.gitflowincrementalbuild.boundary.MavenLifecycleParticipant;
 import com.vackosar.gitflowincrementalbuild.control.Property;
 import com.vackosar.gitflowincrementalbuild.mocks.MavenSessionMock;
 

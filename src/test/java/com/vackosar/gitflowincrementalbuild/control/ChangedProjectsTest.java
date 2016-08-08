@@ -31,7 +31,7 @@ public class ChangedProjectsTest extends RepoTest {
                 .getInstance(ChangedProjects.class).get().stream()
                 .map(MavenProject::getBasedir)
                 .map(File::toPath)
-                .map(RepoTest.LOCAL_DIR.resolve("parent")::relativize)
+                .map(RepoTest.LOCAL_DIR.resolve(".")::relativize)
                 .collect(Collectors.toSet());
         Assert.assertEquals(expected, actual);
     }
