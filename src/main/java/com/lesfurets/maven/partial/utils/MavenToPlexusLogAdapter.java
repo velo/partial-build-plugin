@@ -5,7 +5,7 @@ import org.codehaus.plexus.logging.Logger;
 
 /**
  * Maps from a Maven Logger to a Plexus Log.
- * From @see <a href="https://github.com/simpligility/android-ndk-maven-plugin"/>
+ * From @see <a href="https://github.com/simpligility/android-ndk-maven-plugin">Android NDK Maven Plugin</a>
  */
 public final class MavenToPlexusLogAdapter implements Logger {
 
