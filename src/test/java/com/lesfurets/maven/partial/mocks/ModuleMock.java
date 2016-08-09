@@ -10,9 +10,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 import com.lesfurets.maven.partial.core.Configuration;
 import com.lesfurets.maven.partial.core.GuiceModule;
 
@@ -42,15 +40,21 @@ public class ModuleMock extends AbstractModule {
         return new ConsoleLoggerManager().getLoggerForComponent("Test");
     }
 
-    @Singleton @Provides public Git provideGit() throws IOException, GitAPIException {
+    @Singleton
+    @Provides
+    public Git provideGit() throws IOException, GitAPIException {
         return guiceModule.provideGit(new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test")));
     }
 
-    @Singleton @Provides public Configuration arguments() throws Exception {
+    @Singleton
+    @Provides
+    public Configuration arguments() throws Exception {
         return new Configuration(guiceModule.provideMavenSession());
     }
 
-    @Singleton @Provides public MavenSession provideMavenSession() {
+    @Singleton
+    @Provides
+    public MavenSession provideMavenSession() {
         return guiceModule.provideMavenSession();
     }
 
@@ -59,5 +63,7 @@ public class ModuleMock extends AbstractModule {
     }
 
     @Override
-    protected void configure() {}
+    protected void configure() {
+    }
+
 }

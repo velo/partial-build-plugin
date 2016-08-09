@@ -1,8 +1,6 @@
 package com.lesfurets.maven.partial.mocks;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -71,4 +69,5 @@ public abstract class RepoTest {
         System.setOut(normalOut);
         normalOut.print(consoleOut.toString());
     }
+
 }

@@ -1,16 +1,7 @@
 package com.lesfurets.maven.partial.utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.io.*;
+import java.util.*;
 import java.util.function.Function;
 
 import org.apache.maven.model.Plugin;
@@ -25,7 +16,7 @@ public class PluginUtils {
     private static Logger logger = LoggerFactory.getLogger(PluginUtils.class);
 
     private static Function<MavenProject, String> projectIdWriter = project ->
-            project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion();
+                    project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion();
 
     public static String extractPluginConfigValue(String parameter, Plugin plugin) {
         String value = extractConfigValue(parameter, plugin.getConfiguration());
@@ -38,13 +29,13 @@ public class PluginUtils {
     private static String extractConfigValue(String parameter, Object configuration) {
         try {
             return ((Xpp3Dom) configuration).getChild(parameter).getValue();
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
         return null;
     }
 
     public static void writeChangedProjectsToFile(Collection<MavenProject> projects, File outputFile,
-            StringJoiner joiner) {
+                    StringJoiner joiner) {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)))) {
             writer.write(joinProjectIds(projects, joiner, projectIdWriter).toString());
         } catch (IOException e) {
@@ -64,7 +55,7 @@ public class PluginUtils {
     }
 
     public static StringJoiner joinProjectIds(Collection<MavenProject> projects, StringJoiner joiner,
-            Function<MavenProject, String> projectIdWriter) {
+                    Function<MavenProject, String> projectIdWriter) {
         for (MavenProject changedProject : projects) {
             joiner.add(projectIdWriter.apply(changedProject));
         }
@@ -78,4 +69,5 @@ public class PluginUtils {
         patternString = StringUtils.deleteWhitespace(patternString);
         return Arrays.asList(patternString.split(","));
     }
+
 }

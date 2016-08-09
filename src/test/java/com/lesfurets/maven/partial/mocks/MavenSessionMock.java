@@ -18,16 +18,16 @@ public class MavenSessionMock {
 
     public static MavenSession get() throws Exception {
         List<MavenProject> projects = Stream.of(
-                RepoTest.LOCAL_DIR.resolve("."),
-                RepoTest.LOCAL_DIR.resolve("./child1"),
-                RepoTest.LOCAL_DIR.resolve("./child2"),
-                RepoTest.LOCAL_DIR.resolve("./child2/subchild1"),
-                RepoTest.LOCAL_DIR.resolve("./child2/subchild2"),
-                RepoTest.LOCAL_DIR.resolve("./child3"),
-                RepoTest.LOCAL_DIR.resolve("./child4"),
-                RepoTest.LOCAL_DIR.resolve("./child4/subchild41"),
-                RepoTest.LOCAL_DIR.resolve("./child4/subchild42"),
-                RepoTest.LOCAL_DIR.resolve("./child5")
+                        RepoTest.LOCAL_DIR.resolve("."),
+                        RepoTest.LOCAL_DIR.resolve("./child1"),
+                        RepoTest.LOCAL_DIR.resolve("./child2"),
+                        RepoTest.LOCAL_DIR.resolve("./child2/subchild1"),
+                        RepoTest.LOCAL_DIR.resolve("./child2/subchild2"),
+                        RepoTest.LOCAL_DIR.resolve("./child3"),
+                        RepoTest.LOCAL_DIR.resolve("./child4"),
+                        RepoTest.LOCAL_DIR.resolve("./child4/subchild41"),
+                        RepoTest.LOCAL_DIR.resolve("./child4/subchild42"),
+                        RepoTest.LOCAL_DIR.resolve("./child5")
         ).map(MavenSessionMock::createProject).collect(Collectors.toList());
         MavenSession mavenSession = mock(MavenSession.class);
         when(mavenSession.getCurrentProject()).thenReturn(projects.get(0));
@@ -50,4 +50,5 @@ public class MavenSessionMock {
         project.setFile(path.resolve("pom.xml").toFile());
         return project;
     }
+
 }

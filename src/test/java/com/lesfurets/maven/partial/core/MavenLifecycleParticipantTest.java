@@ -23,8 +23,8 @@ public class MavenLifecycleParticipantTest {
         participant.afterProjectsRead(mavenSession);
     }
 
-
-    @Test public void configured() throws Exception {
+    @Test
+    public void configured() throws Exception {
         MavenLifecycleParticipant participant = new MavenLifecycleParticipant();
         Field loggerField = participant.getClass().getDeclaredField("logger");
         loggerField.setAccessible(true);
@@ -32,7 +32,5 @@ public class MavenLifecycleParticipantTest {
         MavenSession mavenSession = MavenSessionMock.get();
         participant.afterProjectsRead(mavenSession);
     }
-
-
 
 }

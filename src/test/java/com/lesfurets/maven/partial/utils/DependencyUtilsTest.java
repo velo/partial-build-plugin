@@ -2,11 +2,7 @@ package com.lesfurets.maven.partial.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,19 +13,19 @@ import org.junit.Test;
 
 public class DependencyUtilsTest {
 
-    public static final String VERSION = "1.0";
-    public static final String GROUP_ID = "com.test";
+    private static final String VERSION = "1.0";
+    private static final String GROUP_ID = "com.test";
 
-    MavenProject parent;
-    MavenProject m1;
-    MavenProject m2;
-    MavenProject m3;
-    MavenProject m4;
-    MavenProject m5;
-    MavenProject m6;
-    MavenProject m7;
+    private MavenProject parent;
+    private MavenProject m1;
+    private MavenProject m2;
+    private MavenProject m3;
+    private MavenProject m4;
+    private MavenProject m5;
+    private MavenProject m6;
+    private MavenProject m7;
 
-    List<MavenProject> allProjects;
+    private List<MavenProject> allProjects;
 
     @Before
     public void setUp() {

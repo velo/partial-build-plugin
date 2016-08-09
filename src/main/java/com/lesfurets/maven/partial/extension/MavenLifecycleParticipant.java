@@ -9,9 +9,7 @@ import org.codehaus.plexus.logging.Logger;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.lesfurets.maven.partial.core.Configuration;
-import com.lesfurets.maven.partial.core.GuiceModule;
-import com.lesfurets.maven.partial.core.UnchangedProjectsRemover;
+import com.lesfurets.maven.partial.core.*;
 
 @Component(role = AbstractMavenLifecycleParticipant.class)
 public class MavenLifecycleParticipant extends AbstractMavenLifecycleParticipant {

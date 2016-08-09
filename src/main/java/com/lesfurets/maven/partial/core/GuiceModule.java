@@ -10,9 +10,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.impl.StaticLoggerBinder;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 
 public class GuiceModule extends AbstractModule {
 
@@ -31,17 +29,27 @@ public class GuiceModule extends AbstractModule {
         File pomDir = mavenSession.getCurrentProject().getBasedir().toPath().toFile();
         builder.findGitDir(pomDir);
         if (builder.getGitDir() == null) {
-            throw new IllegalArgumentException("Git repository root directory not found ascending from current working directory:'" + pomDir + "'.");
+            throw new IllegalArgumentException("Git repository root directory not found ascending from current " +
+                            "working directory:'" + pomDir + "'.");
         }
         logger.info("Git root is: " + String.valueOf(builder.getGitDir().getAbsolutePath()));
         return Git.wrap(builder.build());
     }
 
-    @Provides @Singleton public MavenSession provideMavenSession() { return mavenSession; }
+    @Provides
+    @Singleton
+    public MavenSession provideMavenSession() {
+        return mavenSession;
+    }
 
-    @Provides @Singleton public Logger provideLogger() { return logger; }
+    @Provides
+    @Singleton
+    public Logger provideLogger() {
+        return logger;
+    }
 
     @Override
-    protected void configure() {}
+    protected void configure() {
+    }
 
 }

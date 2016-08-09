@@ -1,11 +1,7 @@
 package com.lesfurets.maven.partial.mocks;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -14,9 +10,7 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.*;
 
 public class LocalRepoMock extends RepoMock {
 
@@ -25,10 +19,13 @@ public class LocalRepoMock extends RepoMock {
     private RemoteRepoMock remoteRepo;
 
     public LocalRepoMock(boolean remote) throws Exception {
-        try {delete(REPO);} catch (Exception e) {}
+        try {
+            delete(REPO);
+        } catch (Exception ignored) {
+        }
         boolean mkdirs = REPO.mkdirs();
         if (!mkdirs) {
-            throw new Exception("Cannot create directory for git repository : "+ REPO.toString());
+            throw new Exception("Cannot create directory for git repository : " + REPO.toString());
         }
         InputStream zip = LocalRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
         new UnZiper().act(zip, REPO);
@@ -60,9 +57,9 @@ public class LocalRepoMock extends RepoMock {
         git.reset().setRef(master.getName()).call();
 
         File file2 = REPO.toPath().resolve("child2/subChild1/src/resources/file2").toFile();
-        FileUtils.fileWrite(file2,"changed File");
+        FileUtils.fileWrite(file2, "changed File");
         File file1 = REPO.toPath().resolve("child3/src/resources/file1").toFile();
-        FileUtils.fileWrite(file1,"changed line");
+        FileUtils.fileWrite(file1, "changed line");
         File child4 = REPO.toPath().resolve("child4/pom.xml").toFile();
         FileUtils.fileAppend(child4.getName(), "<!-- -->");
         git.commit().setAll(true).setMessage("feature1 changes").call();
@@ -72,8 +69,8 @@ public class LocalRepoMock extends RepoMock {
     public void configureRemote(String repoUrl) throws URISyntaxException, IOException, GitAPIException {
         StoredConfig config = git.getRepository().getConfig();
         config.clear();
-        config.setString("remote", "origin" ,"fetch", "+refs/heads/*:refs/remotes/origin/*");
-        config.setString("remote", "origin" ,"push", "+refs/heads/*:refs/remotes/origin/*");
+        config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
+        config.setString("remote", "origin", "push", "+refs/heads/*:refs/remotes/origin/*");
         config.setString("branch", "master", "remote", "origin");
         config.setString("baseBranch", "master", "merge", "refs/heads/master");
         config.setString("push", null, "default", "current");
@@ -95,7 +92,6 @@ public class LocalRepoMock extends RepoMock {
     protected File getRepoDir() {
         return REPO;
     }
-
 
     public Git getGit() {
         return git;

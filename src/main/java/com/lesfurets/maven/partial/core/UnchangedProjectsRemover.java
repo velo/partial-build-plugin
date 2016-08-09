@@ -7,10 +7,7 @@ import static com.lesfurets.maven.partial.utils.PluginUtils.writeChangedProjects
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,11 +51,12 @@ public class UnchangedProjectsRemover {
         final Set<MavenProject> changedProjects = getAllDependentProjects(changed);
 
         final List<MavenProject> sortedChanged = mavenSession.getProjects().stream()
-                .filter(changedProjects::contains)
-                .collect(Collectors.toList());
+                        .filter(changedProjects::contains)
+                        .collect(Collectors.toList());
 
         mavenSession.getProjects().forEach(m -> m.getProperties()
-                .setProperty(CHANGED_PROJECTS, joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
+                        .setProperty(CHANGED_PROJECTS,
+                                        joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
 
         if (configuration.writeChanged()) {
             Path defaultPath = Modules.getPath(mavenSession.getTopLevelProject()).resolve(CHANGED_PROJECTS);
@@ -77,27 +75,27 @@ public class UnchangedProjectsRemover {
                 mavenSession.getGoals().add("validate");
             } else {
                 mavenSession.setProjects(mavenSession.getProjects().stream()
-                        .filter(rebuildProjects::contains)
-                        .collect(Collectors.toList()));
+                                .filter(rebuildProjects::contains)
+                                .collect(Collectors.toList()));
             }
         } else {
             mavenSession.getProjects().stream()
-                    .filter(p -> !changed.contains(p))
-                    .forEach(this::ifSkipDependenciesTest);
+                            .filter(p -> !changed.contains(p))
+                            .forEach(this::ifSkipDependenciesTest);
         }
     }
 
     public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
         mavenSession.getProjects().stream()
-                .filter(changed::contains)
-                .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
+                        .filter(changed::contains)
+                        .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
         return changed;
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
         if (configuration.makeUpstream()) {
             return Stream.concat(changedProjects.stream(), collectDependencies(changedProjects))
-                    .collect(Collectors.toSet());
+                            .collect(Collectors.toSet());
         } else {
             return changedProjects;
         }
@@ -105,9 +103,9 @@ public class UnchangedProjectsRemover {
 
     private Stream<MavenProject> collectDependencies(Set<MavenProject> changedProjects) {
         return changedProjects.stream()
-                .flatMap(this::ifMakeUpstreamGetDependencies)
-                .filter(p -> !changedProjects.contains(p))
-                .map(this::ifSkipDependenciesTest);
+                        .flatMap(this::ifMakeUpstreamGetDependencies)
+                        .filter(p -> !changedProjects.contains(p))
+                        .map(this::ifSkipDependenciesTest);
     }
 
     private MavenProject ifSkipDependenciesTest(MavenProject mavenProject) {

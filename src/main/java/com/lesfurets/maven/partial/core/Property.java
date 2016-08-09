@@ -56,4 +56,5 @@ public enum Property {
         builder.append("</properties>\n");
         return builder.toString();
     }
+
 }

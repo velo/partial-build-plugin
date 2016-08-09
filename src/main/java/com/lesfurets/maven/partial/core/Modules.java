@@ -14,11 +14,12 @@ import com.google.inject.Singleton;
 @Singleton
 public class Modules {
 
-    @Inject MavenSession session;
+    @Inject
+    MavenSession session;
 
     public Map<Path, MavenProject> createPathMap() {
         return session.getProjects().stream()
-                .collect(Collectors.toMap(Modules::getPath, project -> project));
+                        .collect(Collectors.toMap(Modules::getPath, project -> project));
     }
 
     public static Path getPath(MavenProject project) {
@@ -28,4 +29,5 @@ public class Modules {
             throw new RuntimeException(e);
         }
     }
+
 }

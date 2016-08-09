@@ -5,12 +5,7 @@ import static com.lesfurets.maven.partial.utils.PluginUtils.separatePattern;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.maven.MavenExecutionException;
@@ -96,8 +91,8 @@ public class Configuration {
         List<String> patterns = separatePattern(ignoreChangedPattern);
         final PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
         return session.getProjects().stream()
-                .filter(p -> filter.include(p.getArtifact()))
-                .collect(Collectors.toSet());
+                        .filter(p -> filter.include(p.getArtifact()))
+                        .collect(Collectors.toSet());
     }
 
     private Path parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
@@ -111,20 +106,20 @@ public class Configuration {
     private void checkPluginConfiguration(Plugin plugin) {
         if (null != plugin) {
             Arrays.stream(Property.values())
-                    .forEach(p -> p.setValue(extractPluginConfigValue(p.name(), plugin)));
+                            .forEach(p -> p.setValue(extractPluginConfigValue(p.name(), plugin)));
         }
     }
 
     private void checkProperties(Properties properties) throws MavenExecutionException {
         try {
             properties.stringPropertyNames().stream()
-                    .filter(s -> s.startsWith(Property.PREFIX))
-                    .map(s -> s.replaceFirst(Property.PREFIX, ""))
-                    .map(Property::valueOf)
-                    .forEach(p -> p.setValue(properties.getProperty(p.fullName())));
+                            .filter(s -> s.startsWith(Property.PREFIX))
+                            .map(s -> s.replaceFirst(Property.PREFIX, ""))
+                            .map(Property::valueOf)
+                            .forEach(p -> p.setValue(properties.getProperty(p.fullName())));
         } catch (IllegalArgumentException e) {
-            throw new MavenExecutionException("Invalid invalid GIB property found. Allowed properties: \n" + Property
-                    .exemplifyAll(), e);
+            throw new MavenExecutionException("Invalid invalid GIB property found. Allowed properties: \n"
+                            + Property.exemplifyAll(), e);
         }
     }
 
@@ -195,21 +190,22 @@ public class Configuration {
     @Override
     public String toString() {
         return "Configuration{" +
-                "enabled=" + enabled +
-                ", key=" + key +
-                ", referenceBranch='" + referenceBranch + '\'' +
-                ", baseBranch='" + baseBranch + '\'' +
-                ", uncommited=" + uncommited +
-                ", untracked=" + untracked +
-                ", makeUpstream=" + makeUpstream +
-                ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
-                ", buildAll=" + buildAll +
-                ", compareToMergeBase=" + compareToMergeBase +
-                ", fetchBaseBranch=" + fetchBaseBranch +
-                ", fetchReferenceBranch=" + fetchReferenceBranch +
-                ", outputFile=" + outputFile +
-                ", writeChanged=" + writeChanged +
-                ", ignoreChangedPattern='" + ignoreChangedPattern + '\'' +
-                '}';
+                        "enabled=" + enabled +
+                        ", key=" + key +
+                        ", referenceBranch='" + referenceBranch + '\'' +
+                        ", baseBranch='" + baseBranch + '\'' +
+                        ", uncommited=" + uncommited +
+                        ", untracked=" + untracked +
+                        ", makeUpstream=" + makeUpstream +
+                        ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
+                        ", buildAll=" + buildAll +
+                        ", compareToMergeBase=" + compareToMergeBase +
+                        ", fetchBaseBranch=" + fetchBaseBranch +
+                        ", fetchReferenceBranch=" + fetchReferenceBranch +
+                        ", outputFile=" + outputFile +
+                        ", writeChanged=" + writeChanged +
+                        ", ignoreChangedPattern='" + ignoreChangedPattern + '\'' +
+                        '}';
     }
+
 }

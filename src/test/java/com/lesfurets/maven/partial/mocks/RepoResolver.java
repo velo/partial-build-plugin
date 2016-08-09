@@ -10,9 +10,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.DaemonClient;
 import org.eclipse.jgit.transport.ServiceMayNotContinueException;
-import org.eclipse.jgit.transport.resolver.RepositoryResolver;
-import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException;
-import org.eclipse.jgit.transport.resolver.ServiceNotEnabledException;
+import org.eclipse.jgit.transport.resolver.*;
 
 public class RepoResolver implements RepositoryResolver<DaemonClient>, AutoCloseable {
 
@@ -28,9 +26,9 @@ public class RepoResolver implements RepositoryResolver<DaemonClient>, AutoClose
 
     @Override
     public Repository open(DaemonClient client, String name)
-            throws RepositoryNotFoundException,
-            ServiceNotAuthorizedException, ServiceNotEnabledException,
-            ServiceMayNotContinueException {
+                    throws RepositoryNotFoundException,
+                    ServiceNotAuthorizedException, ServiceNotEnabledException,
+                    ServiceMayNotContinueException {
         return getOrCreateRepo(name);
     }
 
@@ -49,8 +47,8 @@ public class RepoResolver implements RepositoryResolver<DaemonClient>, AutoClose
                 repo.create(true);
             } else {
                 repo = new FileRepositoryBuilder()
-                        .setGitDir(new File(repoDir, DOT_GIT))
-                        .setMustExist(true).build();
+                                .setGitDir(new File(repoDir, DOT_GIT))
+                                .setMustExist(true).build();
             }
             repo.scanForRepoChanges();
 
@@ -62,8 +60,9 @@ public class RepoResolver implements RepositoryResolver<DaemonClient>, AutoClose
 
     @Override
     public void close() throws Exception {
-        for (Map.Entry<String, Repository> repository: repositories.entrySet()) {
+        for (Map.Entry<String, Repository> repository : repositories.entrySet()) {
             repository.getValue().close();
         }
     }
+
 }

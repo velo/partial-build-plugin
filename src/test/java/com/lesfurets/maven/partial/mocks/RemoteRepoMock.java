@@ -1,8 +1,6 @@
 package com.lesfurets.maven.partial.mocks;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 
@@ -23,7 +21,10 @@ public class RemoteRepoMock extends RepoMock {
     public RemoteRepoMock(boolean bare) throws IOException, URISyntaxException {
         this.bare = bare;
         if (bare) {
-            try {delete(REPO);} catch (Exception e) {}
+            try {
+                delete(REPO);
+            } catch (Exception ignored) {
+            }
             REPO.mkdir();
         } else {
             InputStream zip = LocalRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
@@ -62,4 +63,5 @@ public class RemoteRepoMock extends RepoMock {
         resolver.close();
         super.close();
     }
+
 }

@@ -2,33 +2,24 @@ package com.lesfurets.maven.partial.mojos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugin.*;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.lesfurets.maven.partial.core.ChangedProjects;
-import com.lesfurets.maven.partial.core.Configuration;
-import com.lesfurets.maven.partial.core.GuiceModule;
-import com.lesfurets.maven.partial.core.Property;
-import com.lesfurets.maven.partial.core.UnchangedProjectsRemover;
+import com.lesfurets.maven.partial.core.*;
 import com.lesfurets.maven.partial.utils.MavenToPlexusLogAdapter;
 import com.lesfurets.maven.partial.utils.PluginUtils;
 
 @Mojo(name = "writeChanged", defaultPhase = LifecyclePhase.VALIDATE,
-        threadSafe = true, inheritByDefault = false, aggregator = true)
+                threadSafe = true, inheritByDefault = false, aggregator = true)
 public class ChangedMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}")
@@ -43,7 +34,8 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "key", defaultValue = "")
     public String key;
 
-    @Parameter(required = false, property = Property.PREFIX + "referenceBranch", defaultValue = "refs/remotes/origin/develop")
+    @Parameter(required = false, property = Property.PREFIX + "referenceBranch", defaultValue =
+                    "refs/remotes/origin/develop")
     public String referenceBranch;
 
     @Parameter(required = false, property = Property.PREFIX + "baseBranch", defaultValue = "HEAD")
@@ -70,7 +62,8 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "fetchReferenceBranch", defaultValue = "false")
     public boolean fetchReferenceBranch;
 
-    @Parameter(required = false, property = Property.PREFIX + "outputFile", defaultValue = "${project.basedir}/changed.projects")
+    @Parameter(required = false, property = Property.PREFIX + "outputFile", defaultValue = "${project" +
+                    ".basedir}/changed.projects")
     public String outputFile;
 
     @Parameter(required = false, property = Property.PREFIX + "writeChanged", defaultValue = "false")
@@ -81,7 +74,6 @@ public class ChangedMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-
         if (!project.isExecutionRoot()) {
             return;
         }
@@ -100,16 +92,16 @@ public class ChangedMojo extends AbstractMojo {
             Set<MavenProject> allDependentProjects = projectsRemover.getAllDependentProjects(changed);
 
             final List<MavenProject> sortedChanged = session.getProjects().stream()
-                    .filter(allDependentProjects::contains)
-                    .collect(Collectors.toList());
+                            .filter(allDependentProjects::contains)
+                            .collect(Collectors.toList());
 
             PluginUtils.writeChangedProjectsToFile(sortedChanged, new File(outputFile));
             session.getProjects().forEach(m -> m.getProperties()
-                    .setProperty(UnchangedProjectsRemover.CHANGED_PROJECTS, PluginUtils.joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
+                            .setProperty(UnchangedProjectsRemover.CHANGED_PROJECTS, PluginUtils.joinProjectIds
+                                            (sortedChanged, new StringJoiner(",")).toString()));
         } catch (GitAPIException | IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }

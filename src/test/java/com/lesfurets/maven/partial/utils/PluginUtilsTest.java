@@ -13,7 +13,8 @@ public class PluginUtilsTest {
 
     List<String> strings = Arrays.asList("something", "something");
 
-    StaticLoggerBinder staticLoggerBinder = new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test"));
+    StaticLoggerBinder staticLoggerBinder = new StaticLoggerBinder(
+                    new ConsoleLoggerManager().getLoggerForComponent("Test"));
 
     @Test
     public void separatePattern() throws Exception {
@@ -27,4 +28,5 @@ public class PluginUtilsTest {
         List<String> patterns = PluginUtils.separatePattern("something,\nsomething");
         assertThat(patterns).isEqualTo(this.strings);
     }
+
 }

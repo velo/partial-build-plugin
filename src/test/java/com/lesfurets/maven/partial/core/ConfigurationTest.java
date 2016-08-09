@@ -29,7 +29,7 @@ public class ConfigurationTest {
         assertEquals("refs/test/branch", arguments.referenceBranch());
     }
 
-    @Test (expected = Exception.class)
+    @Test(expected = Exception.class)
     public void badProperty() throws Exception {
         MavenSession mavenSession = MavenSessionMock.get();
         Properties properties = new Properties();
@@ -38,4 +38,5 @@ public class ConfigurationTest {
         ModuleMock module = ModuleMock.module(mavenSession);
         Configuration arguments = module.arguments();
     }
+
 }
