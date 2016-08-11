@@ -204,7 +204,13 @@ mvn validate -Dpartial.enabled=true -Dpartial.referenceBranch=HEAD~1 -Dpartial.b
 [INFO]              
 ```
 
-Here the plugin only included changed projects in the build session and omited the others. 
+Here the plugin only included changed projects in the build session and omitted the others. 
+It also listed changed projets in the file `changed.projets` : 
+
+```
+    com.test:child3:1.0-SNAPSHOT
+    com.test:child4:1.0-SNAPSHOT
+```
 
 This case was overly simplistic.
 The plugin does more than that. 
