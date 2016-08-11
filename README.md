@@ -24,6 +24,7 @@ So be sure to add `<extension>true</extension>` in the plugin definition to enab
       <version>version</version>
       <extension>true</extension>
        <configuration>
+        <referenceBranch>refs/remotes/origin/master</referenceBranch>
           ...
        </configuration>
     </plugin>
@@ -136,12 +137,87 @@ User properties override system properties overrides plugin configuration, overr
 | ignoreChanged                  | No       | empty                                 | Comma separated pattern of project Id's to ignore from changed project calculation. Ex. com.acme:* ignores changes from all projects with group Id com.acme. These projects are included in the build if they are considered in the default maven build. |
 
 
-## Use Cases
+## Getting Started
 
+Let's illustrate the working principle of the plugin with a simple use case.
+Here we have a simple multi-module project, versioned in Git : 
 
+* reactor
+    * child1
+    * child2
+        * grandchild1
+        * grandchild2
+    * child3
+    * child4
+
+If we build this project on reactor root we would see the following.
+
+```bash
+mvn validate -Dpartial.enabled=false                                                                                                                                                                            [94bcac6]
+[INFO] Scanning for projects...
+[INFO] Partial build disabled...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] parent
+[INFO] child1
+[INFO] child2
+[INFO] grandchild1
+[INFO] grandchild2
+[INFO] child3
+[INFO] child4
+[INFO]                                                                         
+[INFO] ---------------------
+```
+
+So far so good. 
+Maven reactor aggregated all projects and constructed the standard build order. 
+Let's make some changes in modules child3 and child4 and commit those. 
+
+```bash
+    touch child3/file
+    touch child4/file
+    git commit --all -m 'modify child3 and child4'
+```
+
+Now we activate the partial build and tell it to take into account only changes in the last commit. 
+
+```bash
+mvn validate -Dpartial.enabled=true -Dpartial.referenceBranch=HEAD~1 -Dpartial.baseBranch=HEAD                                                                                                                  [94bcac6]
+[INFO] Scanning for projects...
+[INFO] Starting Partial build...
+[INFO] Git root is: /Users/ogunalp/dev/partial-test/.git
+[INFO] Head of branch HEAD is commit of id: commit 94bcac65da63a8578fbec2b241edc7f122219c5d 1470907753 -----p
+[INFO] Head of branch HEAD~1 is commit of id: commit eebfc84bed00343ab2c4dd203b1c26e7771d8f6b 1470907544 -----p
+[INFO] Using merge base of id: commit eebfc84bed00343ab2c4dd203b1c26e7771d8f6b 1470907544 -tr-sp
+[INFO] ------------------------------------------------------------------------
+[INFO] Changed Projects:
+[INFO] 
+[INFO] child4
+[INFO] child3
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] child3
+[INFO] child4
+[INFO]              
+```
+
+Here the plugin only included changed projects in the build session and omited the others. 
+
+This case was overly simplistic.
+The plugin does more than that. 
+It follows dependencies between projects to calculate projects to build. 
+It can be used in complex build configurations and integrated in your build and release lifecycle.
+
+Try it out, tell us what you think.
+
+## Known Issues
+
+* `--resume-from` builds are not supported yet.
+* Changed projects console dump is not ordered.
 
 ## Requirements
 
 - Maven version 3+.
-
-## To-do
