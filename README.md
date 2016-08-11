@@ -153,7 +153,7 @@ Here we have a simple multi-module project, versioned in Git :
 If we build this project on reactor root we would see the following.
 
 ```bash
-mvn validate -Dpartial.enabled=false                                                                                                                                                                            [94bcac6]
+mvn validate -Dpartial.enabled=false
 [INFO] Scanning for projects...
 [INFO] Partial build disabled...
 [INFO] ------------------------------------------------------------------------
@@ -183,7 +183,7 @@ Let's make some changes in modules child3 and child4 and commit those.
 Now we activate the partial build and tell it to take into account only changes in the last commit. 
 
 ```bash
-mvn validate -Dpartial.enabled=true -Dpartial.referenceBranch=HEAD~1 -Dpartial.baseBranch=HEAD                                                                                                                  [94bcac6]
+mvn validate -Dpartial.enabled=true -Dpartial.referenceBranch=HEAD~1 -Dpartial.baseBranch=HEAD
 [INFO] Scanning for projects...
 [INFO] Starting Partial build...
 [INFO] Git root is: /Users/ogunalp/dev/partial-test/.git
