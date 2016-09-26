@@ -3,8 +3,11 @@ package com.lesfurets.maven.partial.utils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingHelper;
 
 public class DependencyUtils {
 
@@ -33,7 +36,8 @@ public class DependencyUtils {
     }
 
     private static boolean isDependentOf(MavenProject possibleDependent, MavenProject project) {
-        return possibleDependent.getDependencies().stream().anyMatch(d -> equals(project, d));
+        return possibleDependent.getDependencies().stream().anyMatch(d -> equals(project, d)) ||
+                        possibleDependent.getBuildPlugins().stream().anyMatch(p -> equals(project, p));
     }
 
     private static Optional<MavenProject> convert(List<MavenProject> projects, Dependency dependency) {
@@ -44,6 +48,12 @@ public class DependencyUtils {
         return dependency.getArtifactId().equals(project.getArtifactId())
                         && dependency.getGroupId().equals(project.getGroupId())
                         && dependency.getVersion().equals(project.getVersion());
+    }
+
+    private static boolean equals(MavenProject project, Plugin plugin) {
+        return plugin.getArtifactId().equals(project.getArtifactId())
+                        && plugin.getGroupId().equals(project.getGroupId())
+                        && plugin.getVersion().equals(project.getVersion());
     }
 
 }

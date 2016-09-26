@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.maven.model.Dependency;
+import org.apache.maven.model.*;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +98,7 @@ public class DependencyUtilsTest {
         m7.setGroupId(GROUP_ID);
         m7.setArtifactId("m7");
         m7.setVersion(VERSION);
+
         Dependency d7 = new Dependency();
         d7.setArtifactId("m7");
         d7.setGroupId(GROUP_ID);
@@ -117,6 +118,14 @@ public class DependencyUtilsTest {
         m6.setDependencies(Arrays.asList(d7));
         //        p --> d1
         parent.setDependencies(Arrays.asList(d1));
+
+        Build build = new Build();
+        Plugin plugin = new Plugin();
+        plugin.setArtifactId(m7.getArtifactId());
+        plugin.setGroupId(m7.getGroupId());
+        plugin.setVersion(m7.getVersion());
+        build.addPlugin(plugin);
+        m5.setBuild(build);
 
         allProjects = Arrays.asList(parent, m1, m2, m3, m4, m5, m6, m7);
     }
@@ -167,7 +176,7 @@ public class DependencyUtilsTest {
     public void collectTransitiveDependentsDontFollowParent() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
         DependencyUtils.collectAllDependents(allProjects, m7, dependents);
-        assertThat(dependents).isEqualTo(Stream.of(m6).collect(Collectors.toSet()));
+        assertThat(dependents).isEqualTo(Stream.of(m6, m5).collect(Collectors.toSet()));
     }
 
     @Test
