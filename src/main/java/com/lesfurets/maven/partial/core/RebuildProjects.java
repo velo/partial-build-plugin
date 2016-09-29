@@ -21,6 +21,7 @@ import com.google.inject.Singleton;
 public class RebuildProjects {
 
     private static final String MAVEN_TEST_SKIP = "maven.test.skip";
+    private static final String SONAR_SKIP = "sonar.skip";
 
     @Inject
     private Configuration configuration;
@@ -50,7 +51,10 @@ public class RebuildProjects {
         } else {
             mavenSession.getProjects().stream()
                             .filter(p -> !changed.contains(p))
-                            .forEach(this::ifSkipDependenciesTest);
+                            .forEach(p -> {
+                                this.ifSkipDependenciesTest(p);
+                                this.ifSkipDependenciesSonar(p);
+                            });
         }
     }
 
@@ -58,12 +62,20 @@ public class RebuildProjects {
         return changedProjects.stream()
                         .flatMap(this::ifMakeUpstreamGetDependencies)
                         .filter(p -> !changedProjects.contains(p))
-                        .map(this::ifSkipDependenciesTest);
+                        .map(this::ifSkipDependenciesTest)
+                        .map(this::ifSkipDependenciesSonar);
     }
 
     private MavenProject ifSkipDependenciesTest(MavenProject mavenProject) {
         if (configuration.skipTestsForNotImpactedModules) {
             mavenProject.getProperties().setProperty(MAVEN_TEST_SKIP, Boolean.TRUE.toString());
+        }
+        return mavenProject;
+    }
+
+    private MavenProject ifSkipDependenciesSonar(MavenProject mavenProject) {
+        if (configuration.skipTestsForNotImpactedModules) {
+            mavenProject.getProperties().setProperty(SONAR_SKIP, Boolean.TRUE.toString());
         }
         return mavenProject;
     }

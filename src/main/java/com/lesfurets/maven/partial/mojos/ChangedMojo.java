@@ -75,6 +75,9 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "buildSnapshotDependencies", defaultValue = "false")
     public String buildSnapshotDependencies;
 
+    @Parameter(required = false, property = Property.PREFIX + "impacted", defaultValue = "true")
+    public boolean impacted;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!project.isExecutionRoot()) {

@@ -26,9 +26,11 @@ public class ImpactedProjects {
     public List<MavenProject> get(Collection<MavenProject> changedProjects) {
         HashSet<MavenProject> changed = new HashSet<>(changedProjects);
         changed.removeAll(configuration.ignoredProjects);
-        mavenSession.getProjects().stream()
-                        .filter(changed::contains)
-                        .forEach(p -> collectDependents(mavenSession.getProjects(), p, changed));
+        if (configuration.impacted) {
+            mavenSession.getProjects().stream()
+                            .filter(changed::contains)
+                            .forEach(p -> collectDependents(mavenSession.getProjects(), p, changed));
+        }
         if (configuration.buildSnapshotDependencies) {
             mavenSession.getProjects().stream()
                             .filter(changed::contains)

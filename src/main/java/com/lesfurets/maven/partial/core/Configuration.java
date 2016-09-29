@@ -43,6 +43,7 @@ public class Configuration {
     public final String ignoreChangedPattern;
     public final boolean buildSnapshotDependencies;
     public final Set<MavenProject> ignoredProjects;
+    public final boolean impacted;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -72,6 +73,7 @@ public class Configuration {
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
             buildSnapshotDependencies = Boolean.valueOf(Property.buildSnapshotDependencies.getValue());
+            impacted = Boolean.valueOf(Property.impacted.getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -144,7 +146,7 @@ public class Configuration {
                         .append("writeChanged", writeChanged)
                         .append("ignoreChangedPattern", ignoreChangedPattern)
                         .append("buildSnapshotDependencies", buildSnapshotDependencies)
+                        .append("impacted", impacted)
                         .toString();
     }
-
 }
