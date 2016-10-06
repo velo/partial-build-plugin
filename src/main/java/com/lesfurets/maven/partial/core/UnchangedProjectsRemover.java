@@ -40,7 +40,7 @@ public class UnchangedProjectsRemover {
         printDelimiter();
         logProjects(changed, "Changed Projects:");
 
-        final Set<MavenProject> ignored = configuration.getIgnoredProjects();
+        final Set<MavenProject> ignored = configuration.ignoredProjects();
         if (!ignored.isEmpty()) {
             printDelimiter();
             logProjects(ignored, "Excluded Projects:");

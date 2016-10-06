@@ -186,8 +186,7 @@ public class Configuration {
         return ignoreChangedPattern;
     }
 
-    // TODO inconsistent naming
-    public Set<MavenProject> getIgnoredProjects() {
+    public Set<MavenProject> ignoredProjects() {
         return ignoredProjects;
     }
 
