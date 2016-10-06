@@ -38,6 +38,13 @@
       <organizationUrl>https://github.com/lesfurets</organizationUrl>
     </developer>
     <developer>
+      <name>Alexandre Dubreuil</name>
+      <url>https://github.com/dubreuia</url>
+      <id>dubreuia</id>
+      <organization>lesfurets.com</organization>
+      <organizationUrl>https://github.com/lesfurets</organizationUrl>
+    </developer>
+    <developer>
       <name>Vaclav Kosar</name>
       <url>https://github.com/vackosar</url>
       <id>vackosar</id>
