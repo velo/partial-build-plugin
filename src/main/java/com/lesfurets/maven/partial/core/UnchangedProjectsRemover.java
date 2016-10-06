@@ -40,7 +40,7 @@ public class UnchangedProjectsRemover {
         printDelimiter();
         logProjects(changed, "Changed Projects:");
 
-        final Set<MavenProject> ignored = configuration.ignoredProjects();
+        final Set<MavenProject> ignored = configuration.ignoredProjects;
         if (!ignored.isEmpty()) {
             printDelimiter();
             logProjects(ignored, "Excluded Projects:");
@@ -59,16 +59,16 @@ public class UnchangedProjectsRemover {
                         .setProperty(CHANGED_PROJECTS,
                                         joinProjectIds(sortedChanged, new StringJoiner(",")).toString()));
 
-        if (configuration.writeChanged()) {
+        if (configuration.writeChanged) {
             Path defaultPath = Modules.getPath(mavenSession.getTopLevelProject()).resolve(CHANGED_PROJECTS);
-            Path outputFilePath = configuration.outputFile().orElse(defaultPath);
+            Path outputFilePath = configuration.outputFile.orElse(defaultPath);
             writeChangedProjectsToFile(sortedChanged, outputFilePath.toFile());
         }
 
         // add ignored projects to build
         changed.addAll(ignored);
 
-        if (!configuration.buildAll()) {
+        if (!configuration.buildAll) {
             Set<MavenProject> rebuildProjects = getRebuildProjects(changed);
             if (rebuildProjects.isEmpty()) {
                 logger.info("No changed artifacts to build. Executing validate goal only.");
@@ -90,7 +90,7 @@ public class UnchangedProjectsRemover {
         mavenSession.getProjects().stream()
                         .filter(changed::contains)
                         .forEach(p -> collectDependents(mavenSession.getProjects(), p, changed));
-        if (configuration.buildSnapshotDependencies()) {
+        if (configuration.buildSnapshotDependencies) {
             mavenSession.getProjects().stream()
                             .filter(changed::contains)
                             .forEach(p -> collectDependenciesInSnapshot(mavenSession.getProjects(), p, changed));
@@ -98,7 +98,7 @@ public class UnchangedProjectsRemover {
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {
-        if (configuration.makeUpstream()) {
+        if (configuration.makeUpstream) {
             return Stream.concat(changedProjects.stream(), collectDependencies(changedProjects))
                             .collect(Collectors.toSet());
         } else {
@@ -114,7 +114,7 @@ public class UnchangedProjectsRemover {
     }
 
     private MavenProject ifSkipDependenciesTest(MavenProject mavenProject) {
-        if (configuration.skipTestsForNotImpactedModules()) {
+        if (configuration.skipTestsForNotImpactedModules) {
             mavenProject.getProperties().setProperty(MAVEN_TEST_SKIP, Boolean.TRUE.toString());
         }
         return mavenProject;

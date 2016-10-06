@@ -37,7 +37,7 @@ public class DifferentFiles {
     public Set<Path> get() throws GitAPIException, IOException {
         fetch();
         checkout();
-        RevCommit base = getBranchHead(configuration.baseBranch());
+        RevCommit base = getBranchHead(configuration.baseBranch);
         final Set<Path> paths;
         try (TreeWalk treeWalk = new TreeWalk(git.getRepository())) {
             treeWalk.addTree(base.getTree());
@@ -46,10 +46,10 @@ public class DifferentFiles {
             treeWalk.setRecursive(true);
             final Path gitDir = Paths.get(git.getRepository().getDirectory().getCanonicalPath()).getParent();
             paths = getDiff(treeWalk, gitDir);
-            if (configuration.uncommited()) {
+            if (configuration.uncommited) {
                 paths.addAll(getUncommitedChanges(gitDir));
             }
-            if (configuration.untracked()) {
+            if (configuration.untracked) {
                 paths.addAll(getUntrackedChanges(gitDir));
             }
         }
@@ -59,19 +59,19 @@ public class DifferentFiles {
     }
 
     private void checkout() throws IOException, GitAPIException {
-        if (!HEAD.equals(configuration.baseBranch()) && !git.getRepository().getFullBranch().equals(configuration
-                        .baseBranch())) {
-            logger.info("Checking out base branch " + configuration.baseBranch() + "...");
-            git.checkout().setName(configuration.baseBranch()).call();
+        if (!HEAD.equals(configuration.baseBranch)
+                        && !git.getRepository().getFullBranch().equals(configuration.baseBranch)) {
+            logger.info("Checking out base branch " + configuration.baseBranch + "...");
+            git.checkout().setName(configuration.baseBranch).call();
         }
     }
 
     private void fetch() throws GitAPIException {
-        if (configuration.fetchReferenceBranch()) {
-            fetch(configuration.referenceBranch());
+        if (configuration.fetchReferenceBranch) {
+            fetch(configuration.referenceBranch);
         }
-        if (configuration.fetchBaseBranch()) {
-            fetch(configuration.baseBranch());
+        if (configuration.fetchBaseBranch) {
+            fetch(configuration.baseBranch);
         }
     }
 
@@ -136,8 +136,8 @@ public class DifferentFiles {
     }
 
     private RevCommit resolveReference(RevCommit base) throws IOException {
-        RevCommit refHead = getBranchHead(configuration.referenceBranch());
-        if (configuration.compareToMergeBase()) {
+        RevCommit refHead = getBranchHead(configuration.referenceBranch);
+        if (configuration.compareToMergeBase) {
             return getMergeBase(base, refHead);
         } else {
             return refHead;

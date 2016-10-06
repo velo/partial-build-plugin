@@ -26,24 +26,23 @@ public class Configuration {
 
     private static final String MAKE_UPSTREAM = "make-upstream";
 
-    private final boolean enabled;
-    private final Path key;
-    private final String referenceBranch;
-    private final String baseBranch;
-    private final boolean uncommited;
-    private final boolean untracked;
-    private final boolean makeUpstream;
-    private final boolean skipTestsForNotImpactedModules;
-    private final boolean buildAll;
-    private final boolean compareToMergeBase;
-    private final boolean fetchBaseBranch;
-    private final boolean fetchReferenceBranch;
-    private final Path outputFile;
-    private final boolean writeChanged;
-    private final String ignoreChangedPattern;
-    private final boolean buildSnapshotDependencies;
-
-    private final Set<MavenProject> ignoredProjects;
+    public final boolean enabled;
+    public final Path key;
+    public final String referenceBranch;
+    public final String baseBranch;
+    public final boolean uncommited;
+    public final boolean untracked;
+    public final boolean makeUpstream;
+    public final boolean skipTestsForNotImpactedModules;
+    public final boolean buildAll;
+    public final boolean compareToMergeBase;
+    public final boolean fetchBaseBranch;
+    public final boolean fetchReferenceBranch;
+    public final Optional<Path> outputFile;
+    public final boolean writeChanged;
+    public final String ignoreChangedPattern;
+    public final boolean buildSnapshotDependencies;
+    public final Set<MavenProject> ignoredProjects;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -98,12 +97,12 @@ public class Configuration {
                         .collect(Collectors.toSet());
     }
 
-    private Path parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
+    private Optional<Path> parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
         Path pomDir = session.getTopLevelProject().getBasedir().toPath();
         if (outputFileValue != null && !outputFileValue.isEmpty()) {
-            return pomDir.resolve(outputFileValue).toAbsolutePath().normalize();
+            return Optional.of(pomDir.resolve(outputFileValue).toAbsolutePath().normalize());
         }
-        return null;
+        return Optional.empty();
     }
 
     private void checkPluginConfiguration(Plugin plugin) {
@@ -124,74 +123,6 @@ public class Configuration {
             throw new MavenExecutionException("Invalid invalid GIB property found. Allowed properties: \n"
                             + Property.exemplifyAll(), e);
         }
-    }
-
-    public boolean enabled() {
-        return enabled;
-    }
-
-    public Optional<Path> key() {
-        return Optional.ofNullable(key);
-    }
-
-    public String referenceBranch() {
-        return referenceBranch;
-    }
-
-    public String baseBranch() {
-        return baseBranch;
-    }
-
-    public boolean uncommited() {
-        return uncommited;
-    }
-
-    public boolean untracked() {
-        return untracked;
-    }
-
-    public boolean makeUpstream() {
-        return makeUpstream;
-    }
-
-    public boolean skipTestsForNotImpactedModules() {
-        return skipTestsForNotImpactedModules;
-    }
-
-    public boolean buildAll() {
-        return buildAll;
-    }
-
-    public boolean compareToMergeBase() {
-        return compareToMergeBase;
-    }
-
-    public boolean fetchBaseBranch() {
-        return fetchBaseBranch;
-    }
-
-    public boolean fetchReferenceBranch() {
-        return fetchReferenceBranch;
-    }
-
-    public Optional<Path> outputFile() {
-        return Optional.ofNullable(outputFile);
-    }
-
-    public boolean writeChanged() {
-        return writeChanged;
-    }
-
-    public String ignoreChangedPattern() {
-        return ignoreChangedPattern;
-    }
-
-    public Set<MavenProject> ignoredProjects() {
-        return ignoredProjects;
-    }
-
-    public boolean buildSnapshotDependencies() {
-        return buildSnapshotDependencies;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class ConfigurationTest {
         when(mavenSession.getUserProperties()).thenReturn(properties);
         ModuleMock module = ModuleMock.module(mavenSession);
         Configuration arguments = module.arguments();
-        assertEquals("refs/test/branch", arguments.referenceBranch());
+        assertEquals("refs/test/branch", arguments.referenceBranch);
     }
 
     @Test(expected = Exception.class)

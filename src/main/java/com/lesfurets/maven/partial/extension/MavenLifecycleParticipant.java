@@ -26,7 +26,7 @@ public class MavenLifecycleParticipant extends AbstractMavenLifecycleParticipant
         logger.info(configuration.toString());
 
         try {
-            if (configuration.enabled()) {
+            if (configuration.enabled) {
                 logger.info("Starting Partial build...");
                 injector.getInstance(UnchangedProjectsRemover.class).act();
             } else {
