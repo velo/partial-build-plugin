@@ -1,5 +1,6 @@
 package com.lesfurets.maven.partial.core;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -90,9 +91,8 @@ public class DifferentFilesTest extends RepoTest {
         getLocalRepoMock().getGit().reset().setRef(HEAD).setMode(ResetCommand.ResetType.HARD).call();
         Property.baseBranch.setValue(REFS_HEADS_FEATURE_2);
         Property.compareToMergeBase.setValue("true");
-        assertTrue(getInstance().get().stream()
-                        .collect(Collectors.toSet()).contains(LOCAL_DIR.resolve("feature2-only-file.txt")));
-        assertTrue(consoleOut.toString().contains("a1d60d0783421dbe18023ba6023c33aaf262c193"));
+        assertTrue(getInstance().get().stream().collect(toSet()).contains(LOCAL_DIR.resolve("feature2-only-file.txt")));
+        assertTrue(consoleOut.toString().contains("ee64b9b863d3d30b429459cb3ccfaeac67e4efa1"));
     }
 
     @Test
