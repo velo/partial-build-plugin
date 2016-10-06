@@ -1,7 +1,7 @@
 package com.lesfurets.maven.partial.core;
 
-import static com.lesfurets.maven.partial.utils.DependencyUtils.collectAllDependenciesInSnapshot;
-import static com.lesfurets.maven.partial.utils.DependencyUtils.collectAllDependents;
+import static com.lesfurets.maven.partial.utils.DependencyUtils.collectDependenciesInSnapshot;
+import static com.lesfurets.maven.partial.utils.DependencyUtils.collectDependents;
 import static com.lesfurets.maven.partial.utils.DependencyUtils.getAllDependencies;
 import static com.lesfurets.maven.partial.utils.PluginUtils.joinProjectIds;
 import static com.lesfurets.maven.partial.utils.PluginUtils.writeChangedProjectsToFile;
@@ -49,10 +49,10 @@ public class UnchangedProjectsRemover {
         // do not write ignored projects as changed
         changed.removeAll(ignored);
 
-        final Set<MavenProject> changedProjects = getAllDependentProjects(changed);
+        collectDependentProjects(changed);
 
-        final List<MavenProject> sortedChanged = mavenSession.getProjects().stream()
-                        .filter(changedProjects::contains)
+        List<MavenProject> sortedChanged = mavenSession.getProjects().stream()
+                        .filter(changed::contains)
                         .collect(Collectors.toList());
 
         mavenSession.getProjects().forEach(m -> m.getProperties()
@@ -86,17 +86,15 @@ public class UnchangedProjectsRemover {
         }
     }
 
-    // TODO effet de bord + return
-    public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
+    public void collectDependentProjects(Set<MavenProject> changed) {
         mavenSession.getProjects().stream()
                         .filter(changed::contains)
-                        .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
+                        .forEach(p -> collectDependents(mavenSession.getProjects(), p, changed));
         if (configuration.makeDependenciesInSnapshot()) {
             mavenSession.getProjects().stream()
                             .filter(changed::contains)
-                            .forEach(p -> collectAllDependenciesInSnapshot(mavenSession.getProjects(), p, changed));
+                            .forEach(p -> collectDependenciesInSnapshot(mavenSession.getProjects(), p, changed));
         }
-        return changed;
     }
 
     private Set<MavenProject> getRebuildProjects(Set<MavenProject> changedProjects) {

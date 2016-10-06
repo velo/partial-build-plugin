@@ -28,7 +28,7 @@ public class DependencyUtils {
         return dependencies;
     }
 
-    public static void collectAllDependents(List<MavenProject> projects, MavenProject project,
+    public static void collectDependents(List<MavenProject> projects, MavenProject project,
                     Set<MavenProject> dependents) {
         projects.stream()
                         .filter(p -> project.equals(p.getParent()) || isDependentOf(p, project))
@@ -36,12 +36,12 @@ public class DependencyUtils {
                         .forEach(p -> {
                             dependents.add(p);
                             if (!project.equals(p.getParent())) {
-                                collectAllDependents(projects, p, dependents);
+                                collectDependents(projects, p, dependents);
                             }
                         });
     }
 
-    public static void collectAllDependenciesInSnapshot(List<MavenProject> projects, MavenProject project,
+    public static void collectDependenciesInSnapshot(List<MavenProject> projects, MavenProject project,
                     Set<MavenProject> dependents) {
         projects.stream()
                         .filter(p -> project.equals(p.getParent())
@@ -50,7 +50,7 @@ public class DependencyUtils {
                         .forEach(p -> {
                             dependents.add(p);
                             if (!project.equals(p.getParent())) {
-                                collectAllDependenciesInSnapshot(projects, p, dependents);
+                                collectDependenciesInSnapshot(projects, p, dependents);
                             }
                         });
     }

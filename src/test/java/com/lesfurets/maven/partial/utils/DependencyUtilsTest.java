@@ -136,56 +136,56 @@ public class DependencyUtilsTest {
     @Test
     public void collectAllDependents() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m2, dependents);
+        DependencyUtils.collectDependents(allProjects, m2, dependents);
         assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m5, m6, m7, m8).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectNoDependents() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m5, dependents);
+        DependencyUtils.collectDependents(allProjects, m5, dependents);
         assertThat(dependents).isEqualTo(Collections.emptySet());
     }
 
     @Test
     public void collectDependentsTransitiveM1() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m1, dependents);
+        DependencyUtils.collectDependents(allProjects, m1, dependents);
         assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7, m8).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectDependentsTransitiveM3() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m3, dependents);
+        DependencyUtils.collectDependents(allProjects, m3, dependents);
         assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7, m8).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectTransitiveDependents() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m4, dependents);
+        DependencyUtils.collectDependents(allProjects, m4, dependents);
         assertThat(dependents).isEqualTo(Stream.of(parent, m1, m2, m3, m6, m7, m8).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectTransitiveDependentsParent() {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, parent, dependents);
+        DependencyUtils.collectDependents(allProjects, parent, dependents);
         assertThat(dependents).isEqualTo(Stream.of(m1, m2, m3, m6, m7, m8).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectParentDependents() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(Arrays.asList(m4, m1, parent), m4, dependents);
+        DependencyUtils.collectDependents(Arrays.asList(m4, m1, parent), m4, dependents);
         assertThat(dependents).isEqualTo(Stream.of(m1, parent).collect(Collectors.toSet()));
     }
 
     @Test
     public void collectTransitiveDependentsDontFollowParent() throws Exception {
         HashSet<MavenProject> dependents = new HashSet<>();
-        DependencyUtils.collectAllDependents(allProjects, m7, dependents);
+        DependencyUtils.collectDependents(allProjects, m7, dependents);
         assertThat(dependents).isEqualTo(Stream.of(m6, m5).collect(Collectors.toSet()));
     }
 
@@ -210,7 +210,7 @@ public class DependencyUtilsTest {
     @Test
     public void collectDependenciesInSnapshot() throws Exception {
         HashSet<MavenProject> dependencies = new HashSet<>();
-        DependencyUtils.collectAllDependenciesInSnapshot(allProjects, m6, dependencies);
+        DependencyUtils.collectDependenciesInSnapshot(allProjects, m6, dependencies);
         assertThat(dependencies).isEqualTo(Stream.of(m8).collect(Collectors.toSet()));
     }
 
