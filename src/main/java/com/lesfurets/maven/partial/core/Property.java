@@ -15,7 +15,8 @@ public enum Property {
     fetchReferenceBranch("false"),
     outputFile("changed.projects"),
     writeChanged("true"),
-    ignoreChanged(""),;
+    ignoreChanged(""),
+    makeDependenciesInSnapshot("false"),;
 
     public static final String PREFIX = "partial.";
 

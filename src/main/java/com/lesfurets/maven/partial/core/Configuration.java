@@ -25,6 +25,7 @@ public class Configuration {
 
     private static final String MAKE_UPSTREAM = "make-upstream";
 
+    // TODO alphabetical order
     private final boolean enabled;
     private final Path key;
     private final String referenceBranch;
@@ -40,6 +41,7 @@ public class Configuration {
     private final Path outputFile;
     private final boolean writeChanged;
     private final String ignoreChangedPattern;
+    private final boolean makeDependenciesInSnapshot;
 
     private final Set<MavenProject> ignoredProjects;
 
@@ -70,6 +72,7 @@ public class Configuration {
             writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
+            makeDependenciesInSnapshot = Boolean.valueOf(Property.makeDependenciesInSnapshot.getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -183,12 +186,18 @@ public class Configuration {
         return ignoreChangedPattern;
     }
 
+    // TODO inconsistent naming
     public Set<MavenProject> getIgnoredProjects() {
         return ignoredProjects;
     }
 
+    public boolean makeDependenciesInSnapshot() {
+        return makeDependenciesInSnapshot;
+    }
+
     @Override
     public String toString() {
+        // TODO use proper tostring
         return "Configuration{" +
                         "enabled=" + enabled +
                         ", key=" + key +
@@ -205,6 +214,7 @@ public class Configuration {
                         ", outputFile=" + outputFile +
                         ", writeChanged=" + writeChanged +
                         ", ignoreChangedPattern='" + ignoreChangedPattern + '\'' +
+                        ", makeDependenciesInSnapshot='" + makeDependenciesInSnapshot + '\'' +
                         '}';
     }
 

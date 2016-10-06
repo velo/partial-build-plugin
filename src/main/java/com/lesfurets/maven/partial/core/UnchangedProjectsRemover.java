@@ -1,5 +1,6 @@
 package com.lesfurets.maven.partial.core;
 
+import static com.lesfurets.maven.partial.utils.DependencyUtils.collectAllDependenciesInSnapshot;
 import static com.lesfurets.maven.partial.utils.DependencyUtils.collectAllDependents;
 import static com.lesfurets.maven.partial.utils.DependencyUtils.getAllDependencies;
 import static com.lesfurets.maven.partial.utils.PluginUtils.joinProjectIds;
@@ -85,10 +86,16 @@ public class UnchangedProjectsRemover {
         }
     }
 
+    // TODO effet de bord + return
     public Set<MavenProject> getAllDependentProjects(Set<MavenProject> changed) {
         mavenSession.getProjects().stream()
                         .filter(changed::contains)
                         .forEach(p -> collectAllDependents(mavenSession.getProjects(), p, changed));
+        if (configuration.makeDependenciesInSnapshot()) {
+            mavenSession.getProjects().stream()
+                            .filter(changed::contains)
+                            .forEach(p -> collectAllDependenciesInSnapshot(mavenSession.getProjects(), p, changed));
+        }
         return changed;
     }
 
