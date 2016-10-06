@@ -90,7 +90,7 @@ public class UnchangedProjectsRemover {
         mavenSession.getProjects().stream()
                         .filter(changed::contains)
                         .forEach(p -> collectDependents(mavenSession.getProjects(), p, changed));
-        if (configuration.makeDependenciesInSnapshot()) {
+        if (configuration.buildSnapshotDependencies()) {
             mavenSession.getProjects().stream()
                             .filter(changed::contains)
                             .forEach(p -> collectDependenciesInSnapshot(mavenSession.getProjects(), p, changed));

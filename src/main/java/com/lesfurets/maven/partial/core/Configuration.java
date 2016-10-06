@@ -41,7 +41,7 @@ public class Configuration {
     private final Path outputFile;
     private final boolean writeChanged;
     private final String ignoreChangedPattern;
-    private final boolean makeDependenciesInSnapshot;
+    private final boolean buildSnapshotDependencies;
 
     private final Set<MavenProject> ignoredProjects;
 
@@ -72,7 +72,7 @@ public class Configuration {
             writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
-            makeDependenciesInSnapshot = Boolean.valueOf(Property.makeDependenciesInSnapshot.getValue());
+            buildSnapshotDependencies = Boolean.valueOf(Property.buildSnapshotDependencies.getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -190,8 +190,8 @@ public class Configuration {
         return ignoredProjects;
     }
 
-    public boolean makeDependenciesInSnapshot() {
-        return makeDependenciesInSnapshot;
+    public boolean buildSnapshotDependencies() {
+        return buildSnapshotDependencies;
     }
 
     @Override
@@ -212,7 +212,7 @@ public class Configuration {
                         .append("outputFile", outputFile)
                         .append("writeChanged", writeChanged)
                         .append("ignoreChangedPattern", ignoreChangedPattern)
-                        .append("makeDependenciesInSnapshot", makeDependenciesInSnapshot)
+                        .append("buildSnapshotDependencies", buildSnapshotDependencies)
                         .toString();
     }
 
