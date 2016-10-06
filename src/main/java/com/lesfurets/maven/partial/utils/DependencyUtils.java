@@ -2,22 +2,26 @@ package com.lesfurets.maven.partial.utils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuildingHelper;
 
 public class DependencyUtils {
 
     public static Set<MavenProject> getAllDependencies(List<MavenProject> projects, MavenProject project) {
-        Set<MavenProject> dependencies = project.getDependencies().stream()
+        Stream<MavenProject> projectDeps = project.getDependencies().stream()
                         .map(d -> convert(projects, d))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .flatMap(p -> getAllDependencies(projects, p).stream())
-                        .collect(Collectors.toSet());
+                        .flatMap(p -> getAllDependencies(projects, p).stream());
+        Stream<MavenProject> pluginDeps = project.getBuildPlugins().stream()
+                        .map(pl -> convert(projects, pl))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .flatMap(p -> getAllDependencies(projects, p).stream());
+        Set<MavenProject> dependencies = Stream.concat(projectDeps, pluginDeps).collect(Collectors.toSet());
         dependencies.add(project);
         return dependencies;
     }
@@ -42,6 +46,10 @@ public class DependencyUtils {
 
     private static Optional<MavenProject> convert(List<MavenProject> projects, Dependency dependency) {
         return projects.stream().filter(p -> equals(p, dependency)).findFirst();
+    }
+
+    private static Optional<MavenProject> convert(List<MavenProject> projects, Plugin plugin) {
+        return projects.stream().filter(p -> equals(p, plugin)).findFirst();
     }
 
     private static boolean equals(MavenProject project, Dependency dependency) {
