@@ -135,7 +135,7 @@ User properties override system properties overrides plugin configuration, overr
 | outputFile                     | No       | ${project.basedir}/changed.properties | Path of the file to write the changed projects output                                                                                                                                                                                                    |
 | writeChanged                   | No       | TRUE                                  | Whether to write or not the changed projects output                                                                                                                                                                                                      |
 | ignoreChanged                  | No       | empty                                 | Comma separated pattern of project Id's to ignore from changed project calculation. Ex. com.acme:* ignores changes from all projects with group Id com.acme. These projects are included in the build if they are considered in the default maven build. |
-
+| buildSnapshotDependencies      | No       | FALSE                                 | Builds all dependencies that are in SNAPSHOT versions. This is necessary if you are using partial build on a reactor where multiple SNAPSHOT projects depend on each other.                                                                              |
 
 ## Getting Started
 
