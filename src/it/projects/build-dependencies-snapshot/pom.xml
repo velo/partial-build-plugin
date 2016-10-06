@@ -31,6 +31,7 @@
           <uncommited>false</uncommited>
           <referenceBranch>refs/heads/develop</referenceBranch>
           <baseBranch>refs/heads/feature/1</baseBranch>
+          <makeDependenciesInSnapshot>true</makeDependenciesInSnapshot>
         </configuration>
       </plugin>
     </plugins>

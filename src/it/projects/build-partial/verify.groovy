@@ -13,6 +13,7 @@ verified &= !buildLog.contains(" child1")
 verified &= !buildLog.contains(" child2")
 verified &= !buildLog.contains(" child5")
 verified &= !buildLog.contains(" child6")
+verified &= !buildLog.contains(" child7")
 verified &= !buildLog.contains(" subchild1")
 verified &= !buildLog.contains(" subchild42")
 

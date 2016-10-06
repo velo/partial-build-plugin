@@ -11,7 +11,7 @@ def project = new File(sourceDir as String)
 def zip = new File(project, "src/it/project.zip")
 new UnZiper().act(zip, basedir as File);
 
-folder = "buildAll-skipTests"
+folder = "build-dependencies-snapshot"
 Files.copy(Paths.get(sourceDir as String, "src/it/projects", folder, "pom.xml"),
         Paths.get(basedir as String, "pom.xml"),
         StandardCopyOption.REPLACE_EXISTING)

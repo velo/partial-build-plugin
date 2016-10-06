@@ -197,7 +197,7 @@
           <preBuildHookScript>setup.groovy</preBuildHookScript>
           <postBuildHookScript>verify.groovy</postBuildHookScript>
           <scriptVariables>
-            <projectDir>${project.basedir}</projectDir>
+            <sourceDir>${project.basedir}</sourceDir>
             <projectVersion>${project.version}</projectVersion>
           </scriptVariables>
           <projectsDirectory>src/it/projects</projectsDirectory>

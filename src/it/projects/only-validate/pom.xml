@@ -11,6 +11,7 @@
     <module>child4</module>
     <module>child5</module>
     <module>child6</module>
+    <module>child7</module>
   </modules>
 
   <groupId>parent</groupId>
