@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -25,7 +26,6 @@ public class Configuration {
 
     private static final String MAKE_UPSTREAM = "make-upstream";
 
-    // TODO alphabetical order
     private final boolean enabled;
     private final Path key;
     private final String referenceBranch;
@@ -196,25 +196,24 @@ public class Configuration {
 
     @Override
     public String toString() {
-        // TODO use proper tostring
-        return "Configuration{" +
-                        "enabled=" + enabled +
-                        ", key=" + key +
-                        ", referenceBranch='" + referenceBranch + '\'' +
-                        ", baseBranch='" + baseBranch + '\'' +
-                        ", uncommited=" + uncommited +
-                        ", untracked=" + untracked +
-                        ", makeUpstream=" + makeUpstream +
-                        ", skipTestsForNotImpactedModules=" + skipTestsForNotImpactedModules +
-                        ", buildAll=" + buildAll +
-                        ", compareToMergeBase=" + compareToMergeBase +
-                        ", fetchBaseBranch=" + fetchBaseBranch +
-                        ", fetchReferenceBranch=" + fetchReferenceBranch +
-                        ", outputFile=" + outputFile +
-                        ", writeChanged=" + writeChanged +
-                        ", ignoreChangedPattern='" + ignoreChangedPattern + '\'' +
-                        ", makeDependenciesInSnapshot='" + makeDependenciesInSnapshot + '\'' +
-                        '}';
+        return new ToStringBuilder(this)
+                        .append("enable", enabled)
+                        .append("key", key)
+                        .append("referenceBranch", referenceBranch)
+                        .append("baseBranch", baseBranch)
+                        .append("uncommited", uncommited)
+                        .append("untracked", untracked)
+                        .append("makeUpstream", makeUpstream)
+                        .append("skipTestsForNotImpactedModules", skipTestsForNotImpactedModules)
+                        .append("buildAll", buildAll)
+                        .append("compareToMergeBase", compareToMergeBase)
+                        .append("fetchBaseBranch", fetchBaseBranch)
+                        .append("fetchReferenceBranch", fetchReferenceBranch)
+                        .append("outputFile", outputFile)
+                        .append("writeChanged", writeChanged)
+                        .append("ignoreChangedPattern", ignoreChangedPattern)
+                        .append("makeDependenciesInSnapshot", makeDependenciesInSnapshot)
+                        .toString();
     }
 
 }
