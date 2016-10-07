@@ -199,10 +199,16 @@
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
         <configuration>
+          <setupIncludes>
+            <setupInclude>install-all/pom.xml</setupInclude>
+          </setupIncludes>
+          <pomIncludes>
+            <pomInclude>*/pom.xml</pomInclude>
+          </pomIncludes>
           <skipInvocation>${skipTests}</skipInvocation>
           <addTestClassPath>true</addTestClassPath>
-          <preBuildHookScript>setup.groovy</preBuildHookScript>
-          <postBuildHookScript>verify.groovy</postBuildHookScript>
+          <preBuildHookScript>setup</preBuildHookScript>
+          <postBuildHookScript>verify</postBuildHookScript>
           <scriptVariables>
             <sourceDir>${project.basedir}</sourceDir>
             <projectVersion>${project.version}</projectVersion>
