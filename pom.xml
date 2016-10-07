@@ -211,6 +211,7 @@
           <cloneProjectsTo>${project.build.directory}/it/projects</cloneProjectsTo>
           <cloneAllFiles>true</cloneAllFiles>
           <settingsFile>src/it/settings.xml</settingsFile>
+          <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
         </configuration>
         <executions>
           <execution>
