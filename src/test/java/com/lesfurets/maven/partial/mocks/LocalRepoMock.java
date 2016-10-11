@@ -8,9 +8,7 @@ import java.net.URL;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -43,35 +41,6 @@ public class LocalRepoMock extends RepoMock {
             configureRemote(remoteRepo.repoUrl);
             git.fetch().call();
         }
-    }
-
-    private void resetGitRepo(Git git) throws GitAPIException, IOException {
-        File gitignore = new File(REPO, ".gitignore");
-        gitignore.createNewFile();
-        git.commit().setAll(true).setMessage("git ignore").call();
-        git.branchCreate().setName("develop").call();
-        git.branchCreate().setName("features/1").call();
-        git.branchCreate().setName("features/2").call();
-        File projects = new File(this.getClass().getResource("/projects").getFile());
-        FileUtils.copyDirectoryStructure(projects, REPO);
-        RevCommit struct = git.commit().setAll(true).setMessage("project structure").call();
-
-        Ref master = git.getRepository().findRef("master");
-        git.checkout().setName("develop").call();
-        git.reset().setRef(master.getName()).call();
-        git.checkout().setName("features/2").call();
-        git.reset().setRef(master.getName()).call();
-        git.checkout().setName("features/1").call();
-        git.reset().setRef(master.getName()).call();
-
-        File file2 = REPO.toPath().resolve("child2/subChild1/src/resources/file2").toFile();
-        FileUtils.fileWrite(file2, "changed File");
-        File file1 = REPO.toPath().resolve("child3/src/resources/file1").toFile();
-        FileUtils.fileWrite(file1, "changed line");
-        File child4 = REPO.toPath().resolve("child4/pom.xml").toFile();
-        FileUtils.fileAppend(child4.getName(), "<!-- -->");
-        git.commit().setAll(true).setMessage("feature1 changes").call();
-
     }
 
     public void configureRemote(String repoUrl) throws URISyntaxException, IOException, GitAPIException {

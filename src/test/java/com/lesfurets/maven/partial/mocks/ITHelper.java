@@ -24,7 +24,6 @@ public class ITHelper {
 
     public static final String IT_PATH = "src/it/";
     public static final String IT_PROJECTS = IT_PATH + "projects";
-    public static final String IT_TEST_PROJECT_ZIP = IT_PATH + "project.zip";
     public static final String PROJECT_VERSION_PLACEHOLDER = "@project.version@";
 
     /**
@@ -45,8 +44,6 @@ public class ITHelper {
 
     private final Path testProjectPomPath;
 
-    private final File testProjectZip;
-
     public StaticLoggerBinder staticLoggerBinder;
 
     public ITHelper(File testProjectBaseDir, String pluginProjectBaseDir, String pluginProjectVersion) {
@@ -54,7 +51,6 @@ public class ITHelper {
         this.pluginProjectVersion = pluginProjectVersion;
         this.testProjectBaseDir = testProjectBaseDir;
         this.testProjectPomPath = testProjectBaseDir.toPath().resolve("pom.xml");
-        this.testProjectZip =  new File(pluginProjectBaseDir, IT_TEST_PROJECT_ZIP);
         staticLoggerBinder = new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test"));
 
     }
@@ -77,8 +73,9 @@ public class ITHelper {
     }
 
     public void copyTestPom() throws IOException {
-        Files.copy(Paths.get(pluginProjectBaseDir, IT_PROJECTS, testProjectBaseDir.getName(), "pom.xml"), testProjectPomPath,
-                        StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Paths.get(pluginProjectBaseDir, IT_PROJECTS, testProjectBaseDir.getName(), "pom.xml"),
+                testProjectPomPath,
+                StandardCopyOption.REPLACE_EXISTING);
     }
 
     public void replaceTestPomVersion() throws IOException {
@@ -87,7 +84,4 @@ public class ITHelper {
         Files.write(testProjectPomPath, content.getBytes(UTF_8));
     }
 
-    public void unzipProject() {
-        new UnZiper().act(testProjectZip, testProjectBaseDir);
-    }
 }
