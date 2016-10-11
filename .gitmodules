@@ -1,0 +1,3 @@
+[submodule "src/it/resources/project"]
+	path = src/it/resources/project
+	url = ../partial-build-plugin-test

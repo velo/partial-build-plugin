@@ -7,7 +7,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
+import org.codehaus.plexus.util.FileUtils;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.slf4j.impl.StaticLoggerBinder;
 
 public class ITHelper {
 
@@ -36,18 +47,33 @@ public class ITHelper {
 
     private final File testProjectZip;
 
+    public StaticLoggerBinder staticLoggerBinder;
+
     public ITHelper(File testProjectBaseDir, String pluginProjectBaseDir, String pluginProjectVersion) {
         this.pluginProjectBaseDir = pluginProjectBaseDir;
         this.pluginProjectVersion = pluginProjectVersion;
         this.testProjectBaseDir = testProjectBaseDir;
         this.testProjectPomPath = testProjectBaseDir.toPath().resolve("pom.xml");
         this.testProjectZip =  new File(pluginProjectBaseDir, IT_TEST_PROJECT_ZIP);
+        staticLoggerBinder = new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test"));
+
     }
 
-    public void setupTest() throws IOException {
-        unzipProject();
+    public void setupTest() throws IOException, URISyntaxException {
+        copyGitRepo();
         copyTestPom();
         replaceTestPomVersion();
+    }
+
+    private void copyGitRepo() throws URISyntaxException, IOException {
+        URL repo = LocalRepoMock.class.getResource("/repo");
+        File repoDir = new File(repo.toURI());
+        FileUtils.copyDirectoryStructure(repoDir, testProjectBaseDir);
+        FileRepositoryBuilder fileRepositoryBuilder = new FileRepositoryBuilder();
+        fileRepositoryBuilder.findGitDir(testProjectBaseDir);
+        fileRepositoryBuilder.setWorkTree(testProjectBaseDir);
+        Repository build = fileRepositoryBuilder.build();
+        build.close();
     }
 
     public void copyTestPom() throws IOException {
