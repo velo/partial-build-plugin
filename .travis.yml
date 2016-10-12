@@ -5,10 +5,5 @@ before_install:
   sudo rm /etc/mavenrc
 script:
   mvn verify
-# safelist
-branches:
-  only:
-  - develop
-  - master
 notifications:
   email: false
