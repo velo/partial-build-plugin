@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
-import java.net.URL;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.transport.Daemon;
@@ -30,9 +28,7 @@ public class RemoteRepoMock extends RepoMock {
             }
             REPO.mkdir();
         } else {
-            URL repo = LocalRepoMock.class.getResource("/repo");
-            File repoDir = new File(repo.toURI());
-            FileUtils.copyDirectoryStructure(repoDir, REPO);
+            copyMockRepoTo(getRepoDir());
         }
         repoUrl = "git://localhost:" + port + "/repo.git";
         start();

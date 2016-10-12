@@ -3,9 +3,7 @@ package com.lesfurets.maven.partial.mocks;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -29,13 +27,8 @@ public class LocalRepoMock extends RepoMock {
         if (!mkdirs) {
             throw new Exception("Cannot create directory for git repository : " + REPO.toString());
         }
-        URL repo = LocalRepoMock.class.getResource("/repo");
-        File repoDir = new File(repo.toURI());
-        FileUtils.copyDirectoryStructure(repoDir, REPO);
-        FileRepositoryBuilder fileRepositoryBuilder = new FileRepositoryBuilder();
-        fileRepositoryBuilder.findGitDir(REPO);
-        fileRepositoryBuilder.setWorkTree(REPO);
-        git = Git.wrap(fileRepositoryBuilder.build());
+        copyMockRepoTo(getRepoDir());
+        git = Git.wrap(initRepositoryIn(REPO));
         if (remote) {
             remoteRepo = new RemoteRepoMock(false);
             configureRemote(remoteRepo.repoUrl);

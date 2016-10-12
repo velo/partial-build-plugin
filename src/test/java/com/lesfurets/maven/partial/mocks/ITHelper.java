@@ -8,16 +8,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.impl.StaticLoggerBinder;
 
 public class ITHelper {
@@ -62,14 +59,9 @@ public class ITHelper {
     }
 
     private void copyGitRepo() throws URISyntaxException, IOException {
-        URL repo = LocalRepoMock.class.getResource("/repo");
-        File repoDir = new File(repo.toURI());
-        FileUtils.copyDirectoryStructure(repoDir, testProjectBaseDir);
-        FileRepositoryBuilder fileRepositoryBuilder = new FileRepositoryBuilder();
-        fileRepositoryBuilder.findGitDir(testProjectBaseDir);
-        fileRepositoryBuilder.setWorkTree(testProjectBaseDir);
-        Repository build = fileRepositoryBuilder.build();
-        build.close();
+        RepoMock.copyMockRepoTo(testProjectBaseDir);
+        Repository repo = RepoMock.initRepositoryIn(testProjectBaseDir);
+        repo.close();
     }
 
     public void copyTestPom() throws IOException {
