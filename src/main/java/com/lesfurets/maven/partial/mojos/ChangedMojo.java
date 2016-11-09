@@ -78,6 +78,9 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "impacted", defaultValue = "true")
     public boolean impacted;
 
+    @Parameter(required = false, property = Property.PREFIX + "ignoreAllReactorProjects", defaultValue = "true")
+    public boolean ignoreAllReactorProjects;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!project.isExecutionRoot()) {
