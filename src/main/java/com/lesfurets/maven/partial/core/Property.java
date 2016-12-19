@@ -16,7 +16,9 @@ public enum Property {
     outputFile("changed.projects"),
     writeChanged("true"),
     ignoreChanged(""),
-    buildSnapshotDependencies("false"),;
+    buildSnapshotDependencies("false"),
+    impacted("true"),
+    ignoreAllReactorProjects("false");
 
     public static final String PREFIX = "partial.";
 

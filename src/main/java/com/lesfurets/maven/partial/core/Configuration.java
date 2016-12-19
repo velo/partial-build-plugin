@@ -43,6 +43,8 @@ public class Configuration {
     public final String ignoreChangedPattern;
     public final boolean buildSnapshotDependencies;
     public final Set<MavenProject> ignoredProjects;
+    public final boolean impacted;
+    public final boolean ignoreAllReactorProjects;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -51,8 +53,8 @@ public class Configuration {
             makeUpstream = MAKE_UPSTREAM.equals(session.getRequest().getMakeBehavior());
             Plugin plugin = session.getTopLevelProject().getPlugin(PLUGIN_KEY);
             // check properties
-            checkProperties(session.getTopLevelProject().getProperties());
             checkPluginConfiguration(plugin);
+            checkProperties(session.getTopLevelProject().getProperties());
             checkProperties(System.getProperties());
             checkProperties(session.getUserProperties());
             // parse into configuration
@@ -69,9 +71,11 @@ public class Configuration {
             fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
             outputFile = parseOutputFile(session, Property.outputFile.getValue());
             writeChanged = Boolean.valueOf(Property.writeChanged.getValue());
+            buildSnapshotDependencies = Boolean.valueOf(Property.buildSnapshotDependencies.getValue());
+            impacted = Boolean.valueOf(Property.impacted.getValue());
+            ignoreAllReactorProjects = Boolean.valueOf(Property.ignoreAllReactorProjects.getValue());
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
-            buildSnapshotDependencies = Boolean.valueOf(Property.buildSnapshotDependencies.getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -88,13 +92,19 @@ public class Configuration {
 
     private Set<MavenProject> getIgnoredProjects(MavenSession session, String ignoreChangedPattern) {
         if (Strings.isNullOrEmpty(ignoreChangedPattern)) {
-            return Collections.emptySet();
+            return session.getProjects().stream()
+                            .filter(this::isProjectIgnored)
+                            .collect(Collectors.toSet());
         }
         List<String> patterns = separatePattern(ignoreChangedPattern);
         final PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
         return session.getProjects().stream()
-                        .filter(p -> filter.include(p.getArtifact()))
+                        .filter(p -> filter.include(p.getArtifact()) || isProjectIgnored(p))
                         .collect(Collectors.toSet());
+    }
+
+    private boolean isProjectIgnored(MavenProject p) {
+        return this.ignoreAllReactorProjects && "pom".equals(p.getPackaging()) && !p.getModules().isEmpty();
     }
 
     private Optional<Path> parseOutputFile(MavenSession session, String outputFileValue) throws IOException {
@@ -144,7 +154,8 @@ public class Configuration {
                         .append("writeChanged", writeChanged)
                         .append("ignoreChangedPattern", ignoreChangedPattern)
                         .append("buildSnapshotDependencies", buildSnapshotDependencies)
+                        .append("impacted", impacted)
+                        .append("ignoreAllReactorProjects", ignoreAllReactorProjects)
                         .toString();
     }
-
 }

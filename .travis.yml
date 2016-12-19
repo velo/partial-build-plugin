@@ -10,5 +10,6 @@ branches:
   only:
   - develop
   - master
+  - /^feature_.*$/
 notifications:
   email: false

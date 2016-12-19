@@ -75,6 +75,12 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "buildSnapshotDependencies", defaultValue = "false")
     public String buildSnapshotDependencies;
 
+    @Parameter(required = false, property = Property.PREFIX + "impacted", defaultValue = "true")
+    public boolean impacted;
+
+    @Parameter(required = false, property = Property.PREFIX + "ignoreAllReactorProjects", defaultValue = "true")
+    public boolean ignoreAllReactorProjects;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!project.isExecutionRoot()) {
@@ -82,9 +88,9 @@ public class ChangedMojo extends AbstractMojo {
         }
 
         Injector injector = Guice.createInjector(new GuiceModule(new MavenToPlexusLogAdapter(getLog()), session));
-        UnchangedProjectsRemover projectsRemover = injector.getInstance(UnchangedProjectsRemover.class);
         ChangedProjects changedProjects = injector.getInstance(ChangedProjects.class);
         Configuration configuration = injector.getInstance(Configuration.class);
+        ImpactedProjects impactedProjects = injector.getInstance(ImpactedProjects.class);
 
         getLog().info(configuration.toString());
 
@@ -92,11 +98,7 @@ public class ChangedMojo extends AbstractMojo {
             Set<MavenProject> changed = changedProjects.get();
             Set<MavenProject> ignoredProjects = configuration.ignoredProjects;
             changed.removeAll(ignoredProjects);
-            projectsRemover.collectDependentProjects(changed);
-
-            List<MavenProject> sortedChanged = session.getProjects().stream()
-                            .filter(changed::contains)
-                            .collect(Collectors.toList());
+            List<MavenProject> sortedChanged = impactedProjects.get(changed);
 
             PluginUtils.writeChangedProjectsToFile(sortedChanged, new File(outputFile));
             session.getProjects().forEach(m -> m.getProperties()
