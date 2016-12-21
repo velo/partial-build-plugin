@@ -50,6 +50,12 @@
       <id>vackosar</id>
     </developer>
   </developers>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -161,6 +167,11 @@
           <artifactId>plexus-component-metadata</artifactId>
           <version>1.6</version>
         </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.6.7</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <defaultGoal>clean install</defaultGoal>
@@ -261,9 +272,41 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
+    <profile>
+      <id>ossrh</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <useAgent>true</useAgent>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>release</id>
       <build>
@@ -294,19 +337,19 @@
             </executions>
           </plugin>
           <plugin>
-            <artifactId>maven-gpg-plugin</artifactId>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <extensions>true</extensions>
             <executions>
               <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
+                <id>deploy-to-sonatype</id>
+                <phase>deploy</phase>
                 <goals>
-                  <goal>sign</goal>
+                  <goal>deploy</goal>
+                  <goal>release</goal>
                 </goals>
               </execution>
             </executions>
-            <configuration>
-              <useAgent>true</useAgent>
-            </configuration>
           </plugin>
         </plugins>
       </build>
