@@ -44,6 +44,17 @@ public class GuiceModule extends AbstractModule {
 
     @Provides
     @Singleton
+    public DifferentFiles provideDifferentFiles(Injector injector) {
+        final Configuration configuration = injector.getInstance(Configuration.class);
+        if (configuration.useNativeGit) {
+            return injector.getInstance(DifferentFilesNative.class);
+        } else {
+            return injector.getInstance(DifferentFilesJGit.class);
+        }
+    }
+
+    @Provides
+    @Singleton
     public Logger provideLogger() {
         return logger;
     }

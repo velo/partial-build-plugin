@@ -12,6 +12,8 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 import com.google.inject.*;
 import com.lesfurets.maven.partial.core.Configuration;
+import com.lesfurets.maven.partial.core.DifferentFiles;
+import com.lesfurets.maven.partial.core.DifferentFilesNative;
 import com.lesfurets.maven.partial.core.GuiceModule;
 
 public class ModuleMock extends AbstractModule {
@@ -20,6 +22,10 @@ public class ModuleMock extends AbstractModule {
 
     public static ModuleMock module() throws Exception {
         return new ModuleMock();
+    }
+
+    public static ModuleMock module(String repoDir) throws Exception {
+        return new ModuleMock(repoDir);
     }
 
     public static ModuleMock module(MavenSession session) throws Exception {
@@ -34,6 +40,10 @@ public class ModuleMock extends AbstractModule {
         this.guiceModule = new GuiceModule(new ConsoleLogger(), session);
     }
 
+    public ModuleMock(String repoDir) throws Exception {
+        this.guiceModule = new GuiceModule(new ConsoleLogger(), getMavenSessionMock(repoDir));
+    }
+
     @Singleton
     @Provides
     public Logger provideLogger() {
@@ -44,6 +54,12 @@ public class ModuleMock extends AbstractModule {
     @Provides
     public Git provideGit() throws IOException, GitAPIException {
         return guiceModule.provideGit(new StaticLoggerBinder(new ConsoleLoggerManager().getLoggerForComponent("Test")));
+    }
+
+    @Provides
+    @Singleton
+    public DifferentFiles provideDifferentFiles() {
+        return new DifferentFilesNative();
     }
 
     @Singleton
@@ -60,6 +76,10 @@ public class ModuleMock extends AbstractModule {
 
     private MavenSession getMavenSessionMock() throws Exception {
         return MavenSessionMock.get();
+    }
+
+    private MavenSession getMavenSessionMock(String repoDir) throws Exception {
+        return MavenSessionMock.get(repoDir);
     }
 
     @Override

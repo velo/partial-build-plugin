@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.Git;
 
 public abstract class RepoMock implements AutoCloseable {
 
-    protected abstract File getRepoDir();
+    public abstract File getRepoDir();
 
     public abstract Git getGit();
 
