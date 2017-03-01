@@ -3,7 +3,6 @@ package com.lesfurets.maven.partial.mojos;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.*;
@@ -81,6 +80,9 @@ public class ChangedMojo extends AbstractMojo {
     @Parameter(required = false, property = Property.PREFIX + "ignoreAllReactorProjects", defaultValue = "true")
     public boolean ignoreAllReactorProjects;
 
+    @Parameter(required = false, property = Property.PREFIX + "useNativeGit", defaultValue = "false")
+    public boolean useNativeGit;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!project.isExecutionRoot()) {
@@ -105,7 +107,7 @@ public class ChangedMojo extends AbstractMojo {
                             .setProperty(UnchangedProjectsRemover.CHANGED_PROJECTS, PluginUtils.joinProjectIds
                                             (sortedChanged, new StringJoiner(",")).toString()));
         } catch (GitAPIException | IOException e) {
-            e.printStackTrace();
+            throw new MojoExecutionException("Exception during Partial Build execution: ", e);
         }
     }
 

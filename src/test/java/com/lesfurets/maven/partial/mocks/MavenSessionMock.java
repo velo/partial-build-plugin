@@ -17,16 +17,12 @@ import org.apache.maven.project.MavenProject;
 
 public class MavenSessionMock {
 
-    final static Path rootDirectory = new File(System.getProperty("user.dir")).toPath();
-
     public static MavenSession get() throws Exception {
-        MavenSession mavenSession = getMavenSession(null);
-        return mavenSession;
+        return getMavenSession(null);
     }
 
     public static MavenSession get(String repoDir) throws Exception {
-        MavenSession mavenSession = getMavenSession(repoDir);
-        return mavenSession;
+        return getMavenSession(repoDir);
     }
 
     private static MavenSession getMavenSession(String repoDir) {

@@ -40,7 +40,7 @@ public class ModuleMock extends AbstractModule {
         this.guiceModule = new GuiceModule(new ConsoleLogger(), session);
     }
 
-    public ModuleMock(String repoDir) throws Exception {
+    private ModuleMock(String repoDir) throws Exception {
         this.guiceModule = new GuiceModule(new ConsoleLogger(), getMavenSessionMock(repoDir));
     }
 

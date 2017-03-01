@@ -1,15 +1,14 @@
 package com.lesfurets.maven.partial.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
+
+import java.io.*;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.codehaus.plexus.logging.Logger;
 
@@ -23,12 +22,12 @@ public class DifferentFilesNative implements DifferentFiles {
     private static final String HEAD = "HEAD";
     private static final String REFS_REMOTES = "refs/remotes/";
     private static final String REFS_HEADS = "refs/heads/";
-    private static long PROCESS_TIMEOUT = 10000;
     private Path parentPath;
     @Inject
     private Configuration configuration;
     @Inject
     private Logger logger;
+    private NativeProcessRunner runner;
 
     public Set<Path> get() throws IOException {
         fetch();
@@ -61,13 +60,10 @@ public class DifferentFilesNative implements DifferentFiles {
     }
 
     private void checkout() throws IOException {
-        Process exec = executeGitCommand("symbolic-ref", HEAD);
-        String fullBranch = checkOutput(exec);
-        if (!HEAD.equals(configuration.baseBranch)
-                && !fullBranch.equals(configuration.baseBranch)) {
+        String fullBranch = runGitCommand("symbolic-ref", HEAD);
+        if (!HEAD.equals(configuration.baseBranch) && !fullBranch.equals(configuration.baseBranch)) {
             logger.info("Checking out base branch " + configuration.baseBranch + "...");
-            Process checkout = executeGitCommand("checkout", configuration.baseBranch);
-            checkOutput(checkout);
+            runGitCommand("checkout", configuration.baseBranch);
         }
     }
 
@@ -84,12 +80,11 @@ public class DifferentFilesNative implements DifferentFiles {
         logger.info("Fetching branch " + branchName);
         if (!branchName.startsWith(REFS_REMOTES)) {
             throw new IllegalArgumentException("Branch name '" + branchName + "' is not tracking branch name since it" +
-                    " does not start " + REFS_REMOTES);
+                            " does not start " + REFS_REMOTES);
         }
         String remoteName = extractRemoteName(branchName);
         String shortName = extractShortName(remoteName, branchName);
-        Process fetch = executeGitCommand("fetch", remoteName, REFS_HEADS + shortName + ":" + branchName);
-        checkOutput(fetch);
+        runGitCommand("fetch", remoteName, REFS_HEADS + shortName + ":" + branchName);
     }
 
     private String extractRemoteName(String branchName) {
@@ -101,26 +96,23 @@ public class DifferentFilesNative implements DifferentFiles {
     }
 
     private String getMergeBase(String baseCommit, String referenceHeadCommit) throws IOException {
-        Process mergeBase = executeGitCommand("merge-base", baseCommit, referenceHeadCommit);
-        String commit = checkOutput(mergeBase);
+        String commit = runGitCommand("merge-base", baseCommit, referenceHeadCommit);
         logger.info("Using merge base of id: " + commit);
         return commit;
     }
 
     private Set<Path> getDiff(String base, String reference, Path gitDir) throws IOException {
-        Process diff = executeGitCommand("diff", "--name-only", base, reference, gitDir.toString());
-        String diffFiles = checkOutput(diff);
-        return Stream.of(diffFiles.split("\n"))
-                .map(File::new)
-                .map(File::toPath)
-                .map(gitDir::resolve)
-                .map(Path::toAbsolutePath)
-                .collect(Collectors.toSet());
+        String diffFiles = runGitCommand("diff", "--name-only", base, reference, gitDir.toString());
+        return of(diffFiles.split("\n"))
+                        .map(File::new)
+                        .map(File::toPath)
+                        .map(gitDir::resolve)
+                        .map(Path::toAbsolutePath)
+                        .collect(Collectors.toSet());
     }
 
     private String getBranchHead(String branchName) throws IOException {
-        Process revParse = executeGitCommand("rev-parse", branchName);
-        String resolvedId = checkOutput(revParse);
+        String resolvedId = runGitCommand("rev-parse", branchName);
         if (resolvedId == null) {
             throw new IllegalArgumentException("Git rev str '" + branchName + "' not found.");
         }
@@ -129,30 +121,28 @@ public class DifferentFilesNative implements DifferentFiles {
     }
 
     private Set<Path> getUncommitedChanges(Path gitDir) throws IOException {
-        Process uncommitted = executeGitCommand("diff", "--name-only", gitDir.toString());
-        String uncommittedFiles = checkOutput(uncommitted);
-        return Stream.of(uncommittedFiles.split("\n"))
-                .map(File::new)
-                .map(File::toPath)
-                .map(gitDir::resolve)
-                .map(Path::toAbsolutePath)
-                .collect(Collectors.toSet());
+        String uncommittedFiles = runGitCommand("diff", "--name-only", gitDir.toString());
+        return of(uncommittedFiles.split("\n"))
+                        .map(File::new)
+                        .map(File::toPath)
+                        .map(gitDir::resolve)
+                        .map(Path::toAbsolutePath)
+                        .collect(Collectors.toSet());
     }
 
     private Set<Path> getUntrackedChanges(Path gitDir) throws IOException {
-        Process untracked = executeGitCommand("ls-files", "--others", "--exclude-standard",
-                gitDir.toString());
-        String uncommittedFiles = checkOutput(untracked);
-        return Stream.of(uncommittedFiles.split("\n"))
-                .map(File::new)
-                .map(File::toPath)
-                .map(gitDir::resolve)
-                .map(Path::toAbsolutePath)
-                .collect(Collectors.toSet());
+        String uncommittedFiles = runGitCommand("ls-files", "--others", "--exclude-standard",
+                        gitDir.toString());
+        return of(uncommittedFiles.split("\n"))
+                        .map(File::new)
+                        .map(File::toPath)
+                        .map(gitDir::resolve)
+                        .map(Path::toAbsolutePath)
+                        .collect(Collectors.toSet());
     }
 
     private String resolveReference(String base) throws IOException {
-        String refHead = getBranchHead(configuration.referenceBranch);
+        final String refHead = getBranchHead(configuration.referenceBranch);
         if (configuration.compareToMergeBase) {
             return getMergeBase(base, refHead);
         } else {
@@ -160,40 +150,46 @@ public class DifferentFilesNative implements DifferentFiles {
         }
     }
 
-    private String getOutput(Process exec) throws IOException {
-        return CharStreams.toString(new InputStreamReader(exec.getInputStream(), "UTF-8")).trim();
+    private String runGitCommand(String... commands) throws IOException {
+        final String gitPath = System.getenv("GIT_PATH");
+        final String gitExec = (gitPath == null) ? "git" : gitPath;
+        return getRunner().run(concat(of(gitExec), of(commands)).collect(toList()), getParentPath());
     }
 
-    private String checkOutput(Process exec) throws IOException {
-        String output = getOutput(exec);
-        if (exec.exitValue() != 0) {
-            logger.error("Executing " + output);
-            throw new IOException("Process exited with " + exec.exitValue() + " : " + output);
+    private NativeProcessRunner getRunner() {
+        if (runner == null) {
+            runner = new NativeProcessRunner();
         }
-        return output;
+        return runner;
     }
 
-    private Process executeCommand(String... commands) throws IOException {
-        return executeCommandOn(Arrays.asList(commands), getParentPath());
-    }
+    private class NativeProcessRunner {
 
-    private Process executeGitCommand(String... commands) throws IOException {
-        Stream<String> git = Stream.of("git");
-        Stream<String> c = Stream.of(commands);
-        return executeCommandOn(Stream.concat(git, c).collect(Collectors.toList()), getParentPath());
-    }
+        String run(List<String> commands, Path executionPath) throws IOException {
+            final Process exec = new ProcessBuilder(commands)
+                            .directory(executionPath.toFile())
+                            .redirectErrorStream(true)
+                            .start();
+            try {
+                exec.waitFor();
+            } catch (InterruptedException e) {
+                throw new IOException(e.getMessage(), e);
+            }
 
-    private Process executeCommandOn(List<String> commands, Path executionPath) throws IOException {
-        Process exec =
-                new ProcessBuilder(commands)
-                        .directory(executionPath.toFile())
-                        .redirectErrorStream(true)
-                        .start();
-        try {
-            exec.waitFor(PROCESS_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new IOException(e.getMessage());
+            return checkOutput(exec);
         }
-        return exec;
+
+        private String checkOutput(Process exec) throws IOException {
+            final String output = getOutput(exec);
+            if (exec.exitValue() != 0) {
+                throw new IOException("Process exited with " + exec.exitValue() + " : " + output);
+            }
+            return output;
+        }
+
+        private String getOutput(Process exec) throws IOException {
+            return CharStreams.toString(new InputStreamReader(exec.getInputStream(), "UTF-8")).trim();
+        }
     }
+
 }

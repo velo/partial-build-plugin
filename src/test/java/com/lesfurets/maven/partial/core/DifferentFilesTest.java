@@ -61,10 +61,10 @@ public abstract class DifferentFilesTest extends RepoTest {
     public void list() throws Exception {
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
-                Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file2"),
-                Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file22"),
-                Paths.get(LOCAL_DIR + "/child3/src/resources/file1"),
-                Paths.get(LOCAL_DIR + "/child4/pom.xml")
+                        Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file2"),
+                        Paths.get(LOCAL_DIR + "/child2/subchild2/src/resources/file22"),
+                        Paths.get(LOCAL_DIR + "/child3/src/resources/file1"),
+                        Paths.get(LOCAL_DIR + "/child4/pom.xml")
         ));
         assertEquals(expected, differentFiles.get());
     }
@@ -74,10 +74,10 @@ public abstract class DifferentFilesTest extends RepoTest {
         Path workDir = LOCAL_DIR.resolve("child2");
         final DifferentFiles differentFiles = getInstance();
         final Set<Path> expected = new HashSet<>(Arrays.asList(
-                workDir.resolve("subchild2/src/resources/file2"),
-                workDir.resolve("subchild2/src/resources/file22"),
-                workDir.resolve("../child3/src/resources/file1").normalize(),
-                workDir.resolve("../child4/pom.xml").normalize()
+                        workDir.resolve("subchild2/src/resources/file2"),
+                        workDir.resolve("subchild2/src/resources/file22"),
+                        workDir.resolve("../child3/src/resources/file1").normalize(),
+                        workDir.resolve("../child4/pom.xml").normalize()
         ));
         assertEquals(expected, differentFiles.get());
     }
