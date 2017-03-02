@@ -121,7 +121,8 @@ public class DifferentFilesNative implements DifferentFiles {
     }
 
     private Set<Path> getUncommitedChanges(Path gitDir) throws IOException {
-        String uncommittedFiles = runGitCommand("diff", "--name-only", gitDir.toString());
+        String uncommittedFiles = runGitCommand("diff", "--cached", "--name-only", "--diff-filter=ACDMRTU",
+                        gitDir.toString());
         return of(uncommittedFiles.split("\n"))
                         .map(File::new)
                         .map(File::toPath)

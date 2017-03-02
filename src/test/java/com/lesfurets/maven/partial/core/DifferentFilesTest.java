@@ -12,11 +12,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.inject.Guice;
-import com.lesfurets.maven.partial.mocks.*;
+import com.lesfurets.maven.partial.mocks.LocalRepoMock;
+import com.lesfurets.maven.partial.mocks.RepoTest;
 
 public abstract class DifferentFilesTest extends RepoTest {
 
@@ -35,7 +33,7 @@ public abstract class DifferentFilesTest extends RepoTest {
     @Test
     public void listIncludingOnlyUncommited() throws Exception {
         LOCAL_DIR.resolve("file5").toFile().createNewFile();
-        ModuleMock.module().provideGit().add().addFilepattern(".").call();
+        getLocalRepoMock().getGit().add().addFilepattern(".").call();
         Property.untracked.setValue(Boolean.FALSE.toString());
         Property.uncommited.setValue(Boolean.TRUE.toString());
         assertTrue(getInstance().get().stream().anyMatch(p -> p.toString().contains("file5")));
