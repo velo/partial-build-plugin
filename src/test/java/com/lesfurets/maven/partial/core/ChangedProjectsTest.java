@@ -21,7 +21,7 @@ public class ChangedProjectsTest extends RepoTest {
     @Test
     public void list() throws Exception {
         final Set<Path> expected = new HashSet<>(Arrays.asList(
-                        Paths.get("child2/subchild2"),
+                        Paths.get("child2", "subchild2"),
                         Paths.get("child3"),
                         Paths.get("child4")
         ));

@@ -29,7 +29,7 @@ public class LocalRepoMock extends RepoMock {
         }
         InputStream zip = LocalRepoMock.class.getResourceAsStream(RepoTest.TEMPLATE_ZIP);
         new UnZiper().act(zip, REPO);
-        git = new Git(new FileRepository(new File(REPO + "/.git")));
+        git = new Git(new FileRepository(new File(REPO, ".git")));
         if (remote) {
             remoteRepo = new RemoteRepoMock(false);
             configureRemote(remoteRepo.repoUrl);

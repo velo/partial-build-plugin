@@ -13,7 +13,7 @@ public class RemoteRepoMock extends RepoMock {
     private static final File REPO = RepoTest.REMOTE_DIR.toFile();
     private final Git git;
     private static int port = 9418;
-    public String repoUrl = null;
+    public String repoUrl;
     private boolean bare;
     private Daemon server;
     private RepoResolver resolver;
