@@ -1,8 +1,8 @@
 # Partial Build Plugin
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.lesfurets/partial-build-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.lesfurets/partial-build-plugin)
-
 [![Build Status](https://travis-ci.org/lesfurets/partial-build-plugin.svg?branch=develop)](https://travis-ci.org/lesfurets/partial-build-plugin)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/lesfurets/partial-build-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/ozangunalp/partial-build-plugin)
 
 A maven plugin for partially building multi-module projects based on changes in the Git repository.
 
