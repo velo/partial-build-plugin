@@ -41,8 +41,10 @@ public class Configuration {
     public final Optional<Path> outputFile;
     public final boolean writeChanged;
     public final String ignoreChangedPattern;
+    public final String buildAnywaysPattern;
     public final boolean buildSnapshotDependencies;
     public final Set<MavenProject> ignoredProjects;
+    public final Set<MavenProject> buildAnywaysProjects;
     public final boolean impacted;
     public final boolean ignoreAllReactorProjects;
     public final boolean useNativeGit;
@@ -78,6 +80,8 @@ public class Configuration {
             ignoreAllReactorProjects = Boolean.valueOf(Property.ignoreAllReactorProjects.getValue());
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
+            buildAnywaysPattern = Property.buildAnyways.getValue();
+            buildAnywaysProjects = getBuildAnywaysProjects(session, buildAnywaysPattern);
             useNativeGit = Boolean.valueOf(Property.useNativeGit.getValue());
             rootDirectory = session.getExecutionRootDirectory();
         } catch (Exception e) {
@@ -105,6 +109,17 @@ public class Configuration {
         return session.getProjects().stream()
                         .filter(p -> filter.include(p.getArtifact()) || isProjectIgnored(p))
                         .collect(Collectors.toSet());
+    }
+
+    private Set<MavenProject> getBuildAnywaysProjects(MavenSession session, String buildAnywaysPattern) {
+        if (Strings.isNullOrEmpty(buildAnywaysPattern)) {
+            return Collections.emptySet();
+        }
+        List<String> patterns = separatePattern(buildAnywaysPattern);
+        PatternIncludesArtifactFilter filter = new PatternIncludesArtifactFilter(patterns);
+        return session.getProjects().stream()
+                .filter(p -> filter.include(p.getArtifact()))
+                .collect(Collectors.toSet());
     }
 
     private boolean isProjectIgnored(MavenProject p) {
@@ -157,6 +172,7 @@ public class Configuration {
                         .append("outputFile", outputFile)
                         .append("writeChanged", writeChanged)
                         .append("ignoreChangedPattern", ignoreChangedPattern)
+                        .append("buildAnyways", buildAnywaysPattern)
                         .append("buildSnapshotDependencies", buildSnapshotDependencies)
                         .append("impacted", impacted)
                         .append("ignoreAllReactorProjects", ignoreAllReactorProjects)

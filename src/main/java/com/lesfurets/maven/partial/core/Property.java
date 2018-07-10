@@ -16,6 +16,7 @@ public enum Property {
     outputFile("changed.projects"),
     writeChanged("true"),
     ignoreChanged(""),
+    buildAnyways(""),
     buildSnapshotDependencies("false"),
     impacted("true"),
     ignoreAllReactorProjects("false"),
