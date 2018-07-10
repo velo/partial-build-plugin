@@ -14,15 +14,15 @@ _**Disclosure** : This plugin is forked and based on the project [gitflow-increm
 ## Usage
 
 Partial Build Plugin leverages [Maven build extensions](https://maven.apache.org/examples/maven-3-lifecycle-extensions.html) to modify the projects to be build. 
-So be sure to add `<extension>true</extension>` in the plugin definition to enable the partial build.
+So be sure to add `<extensions>true</extensions>` in the plugin definition to enable the partial build.
 ```xml
 <build>
   <plugins>
     <plugin>
       <groupId>com.lesfurets</groupId>
       <artifactId>partial-build-plugin</artifactId>
-      <version>version</version>
-      <extension>true</extension>
+      <version>VERSION</version>
+      <extensions>true</extensions>
        <configuration>
         <referenceBranch>refs/remotes/origin/master</referenceBranch>
           ...
@@ -43,7 +43,7 @@ This will write the list of changed projects into the output file.
     <plugin>
       <groupId>com.lesfurets</groupId>
       <artifactId>partial-build-plugin</artifactId>
-      <version>version</version>
+      <version>VERSION</version>
        <executions>
         <execution>
           <id>changed</id>
@@ -71,8 +71,8 @@ This will write the list of changed projects into the output file.
     <plugin>
       <groupId>com.lesfurets</groupId>
       <artifactId>partial-build-plugin</artifactId>
-      <version>version</version>
-      <extension>true</extension>
+      <version>VERSION</version>
+      <extensions>true</extensions>
        <configuration>
           <referenceBranch>refs/remote/heads/master</referenceBranch>
           <buildAll>true</buildAll>
