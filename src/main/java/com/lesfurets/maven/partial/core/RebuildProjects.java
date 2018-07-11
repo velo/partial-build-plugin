@@ -33,6 +33,7 @@ public class RebuildProjects {
     public void setUpSession(Collection<MavenProject> changedProjects) {
         final Collection<MavenProject> changed = new ArrayList<>(changedProjects);
         changed.addAll(configuration.ignoredProjects);
+        changed.addAll(configuration.buildAnywaysProjects);
         if (!configuration.buildAll) {
             Collection<MavenProject> rebuildProjects = changed;
             if (configuration.makeUpstream) {
