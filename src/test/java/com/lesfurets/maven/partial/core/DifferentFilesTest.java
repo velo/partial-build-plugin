@@ -53,7 +53,8 @@ public class DifferentFilesTest extends RepoTest {
     @Test
     public void listWithCheckout() throws Exception {
         getLocalRepoMock().getGit().reset().setRef(HEAD).setMode(ResetCommand.ResetType.HARD).call();
-        Property.baseBranch.setValue("refs/heads/feature/2");
+        getLocalRepoMock().getGit().reset().setRef(REFS_HEADS_FEATURE_2).setMode(ResetCommand.ResetType.HARD).call();
+        Property.baseBranch.setValue(REFS_HEADS_FEATURE_2);
         getInstance().get();
         assertTrue(consoleOut.toString().contains("Checking out base branch refs/heads/feature/2"));
     }
@@ -85,7 +86,7 @@ public class DifferentFilesTest extends RepoTest {
 
     @Test
     public void listComparedToMergeBase() throws Exception {
-        getLocalRepoMock().getGit().reset().setRef(HEAD).setMode(ResetCommand.ResetType.HARD).call();
+        getLocalRepoMock().getGit().reset().setRef(REFS_HEADS_FEATURE_2).setMode(ResetCommand.ResetType.HARD).call();
         getLocalRepoMock().getGit().checkout().setName(REFS_HEADS_FEATURE_2).call();
         getLocalRepoMock().getGit().reset().setRef(HEAD).setMode(ResetCommand.ResetType.HARD).call();
         Property.baseBranch.setValue(REFS_HEADS_FEATURE_2);
@@ -97,7 +98,7 @@ public class DifferentFilesTest extends RepoTest {
     @Test
     public void fetch() throws Exception {
         Git remoteGit = localRepoMock.getRemoteRepo().getGit();
-        remoteGit.reset().setMode(ResetCommand.ResetType.HARD).call();
+        remoteGit.reset().setRef(DEVELOP).setMode(ResetCommand.ResetType.HARD).call();
         remoteGit.checkout().setName(DEVELOP).call();
         remoteGit.getRepository().getDirectory().toPath().resolve(FETCH_FILE).toFile().createNewFile();
         remoteGit.add().addFilepattern(".").call();
@@ -107,7 +108,7 @@ public class DifferentFilesTest extends RepoTest {
         Property.referenceBranch.setValue(REMOTE_DEVELOP);
         getInstance().get();
         Git localGit = localRepoMock.getGit();
-        localGit.reset().setMode(ResetCommand.ResetType.HARD).call();
+        localGit.reset().setRef(REMOTE_DEVELOP).setMode(ResetCommand.ResetType.HARD).call();
         localGit.checkout().setName(REMOTE_DEVELOP).call();
         assertEquals(FETCH_FILE, localGit.log().setMaxCount(1).call().iterator().next().getFullMessage());
     }
@@ -115,7 +116,7 @@ public class DifferentFilesTest extends RepoTest {
     @Test
     public void fetchNonExistent() throws Exception {
         Git remoteGit = localRepoMock.getRemoteRepo().getGit();
-        remoteGit.reset().setMode(ResetCommand.ResetType.HARD).call();
+        remoteGit.reset().setRef(DEVELOP).setMode(ResetCommand.ResetType.HARD).call();
         remoteGit.checkout().setName(DEVELOP).call();
         remoteGit.getRepository().getDirectory().toPath().resolve(FETCH_FILE).toFile().createNewFile();
         remoteGit.add().addFilepattern(".").call();
@@ -127,7 +128,7 @@ public class DifferentFilesTest extends RepoTest {
         Property.fetchReferenceBranch.setValue(Boolean.TRUE.toString());
         Property.referenceBranch.setValue(REMOTE_DEVELOP);
         getInstance().get();
-        localGit.reset().setMode(ResetCommand.ResetType.HARD).call();
+        localGit.reset().setRef(REMOTE_DEVELOP).setMode(ResetCommand.ResetType.HARD).call();
         localGit.checkout().setName(REMOTE_DEVELOP).call();
         assertEquals(FETCH_FILE, localGit.log().setMaxCount(1).call().iterator().next().getFullMessage());
     }
