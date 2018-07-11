@@ -3,6 +3,7 @@ package com.lesfurets.maven.partial.mocks;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
@@ -17,6 +18,14 @@ import org.apache.maven.project.MavenProject;
 public class MavenSessionMock {
 
     public static MavenSession get() throws Exception {
+        return getMavenSession(null);
+    }
+
+    public static MavenSession get(String repoDir) throws Exception {
+        return getMavenSession(repoDir);
+    }
+
+    private static MavenSession getMavenSession(String repoDir) {
         List<MavenProject> projects = Stream.of(
                         RepoTest.LOCAL_DIR.resolve("."),
                         RepoTest.LOCAL_DIR.resolve("./child1"),
@@ -36,6 +45,7 @@ public class MavenSessionMock {
         when(mavenSession.getUserProperties()).thenReturn(new Properties());
         when(mavenSession.getProjects()).thenReturn(projects);
         when(mavenSession.getTopLevelProject()).thenReturn(projects.get(0));
+        when(mavenSession.getExecutionRootDirectory()).thenReturn(repoDir);
         return mavenSession;
     }
 

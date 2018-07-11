@@ -45,6 +45,8 @@ public class Configuration {
     public final Set<MavenProject> ignoredProjects;
     public final boolean impacted;
     public final boolean ignoreAllReactorProjects;
+    public final boolean useNativeGit;
+    public final String rootDirectory;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -76,6 +78,8 @@ public class Configuration {
             ignoreAllReactorProjects = Boolean.valueOf(Property.ignoreAllReactorProjects.getValue());
             ignoreChangedPattern = Property.ignoreChanged.getValue();
             ignoredProjects = getIgnoredProjects(session, ignoreChangedPattern);
+            useNativeGit = Boolean.valueOf(Property.useNativeGit.getValue());
+            rootDirectory = session.getExecutionRootDirectory();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -156,6 +160,7 @@ public class Configuration {
                         .append("buildSnapshotDependencies", buildSnapshotDependencies)
                         .append("impacted", impacted)
                         .append("ignoreAllReactorProjects", ignoreAllReactorProjects)
+                        .append("useNativeGit", useNativeGit)
                         .toString();
     }
 }

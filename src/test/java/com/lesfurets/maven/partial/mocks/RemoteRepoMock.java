@@ -49,7 +49,7 @@ public class RemoteRepoMock extends RepoMock {
     }
 
     @Override
-    protected File getRepoDir() {
+    public File getRepoDir() {
         return REPO;
     }
 

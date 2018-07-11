@@ -140,6 +140,7 @@ User properties override system properties overrides plugin configuration, overr
 | buildSnapshotDependencies      | No       | FALSE                                 | Builds all dependencies that are in SNAPSHOT versions. This is necessary if you are using partial build on a reactor where multiple SNAPSHOT projects depend on each other.                                                                              |
 | ignoreAllReactorProjects       | No       | FALSE                                 | Ignore reactor projects (pom packaging with modules). Reactor projects are included in the build whether they are changed or not.                                                                                                                        |
 | impacted                       | No       | TRUE                                  | Disables whether the partial build includes also projects impacted by changed projects.                                                                                                                                                                  |
+| useNativeGit                   | No       | FALSE                                 | Use Native Git commands instead of JGit for detecting changed files. It should also cut down the build bootstrap by a couple of seconds                                                                                                                  |
 
 ## Getting Started
 
@@ -227,6 +228,8 @@ Try it out, tell us what you think.
 
 * `--resume-from` builds are not supported yet.
 * Changed projects console dump is not ordered.
+* JGit currently does not support git worktree's (see https://git.eclipse.org/r/#/q/topic:worktree), `useNativeGit` option can be used to work in worktrees. 
+
 
 ## Requirements
 

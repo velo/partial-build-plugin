@@ -18,7 +18,8 @@ public enum Property {
     ignoreChanged(""),
     buildSnapshotDependencies("false"),
     impacted("true"),
-    ignoreAllReactorProjects("false");
+    ignoreAllReactorProjects("false"),
+    useNativeGit("false");
 
     public static final String PREFIX = "partial.";
 

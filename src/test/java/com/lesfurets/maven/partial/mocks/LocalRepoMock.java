@@ -89,7 +89,7 @@ public class LocalRepoMock extends RepoMock {
     }
 
     @Override
-    protected File getRepoDir() {
+    public File getRepoDir() {
         return REPO;
     }
 
