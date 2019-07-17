@@ -3,6 +3,7 @@ package com.lesfurets.maven.partial.core;
 public enum Property {
 
     enabled("true"),
+    disableOnGoal(""),
     repositorySshKey(""),
     referenceBranch("refs/remotes/origin/develop"),
     baseBranch("HEAD"),

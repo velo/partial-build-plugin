@@ -26,7 +26,9 @@ public class MavenLifecycleParticipant extends AbstractMavenLifecycleParticipant
         logger.info(configuration.toString());
 
         try {
-            if (configuration.enabled) {
+            if (configuration.disabledOnGoals.stream().anyMatch(disableForGoal -> session.getRequest().getGoals().contains(disableForGoal))) {
+                logger.info("Partial build was disable for goal: " + configuration.disabledOnGoals);
+            } else if (configuration.enabled) {
                 logger.info("Starting Partial build...");
                 injector.getInstance(UnchangedProjectsRemover.class).act();
             } else {

@@ -49,6 +49,7 @@ public class Configuration {
     public final boolean ignoreAllReactorProjects;
     public final boolean useNativeGit;
     public final String rootDirectory;
+    public final List<String> disabledOnGoals;
 
     @Inject
     public Configuration(MavenSession session) throws IOException {
@@ -83,6 +84,7 @@ public class Configuration {
             buildAnywaysPattern = Property.buildAnyways.getValue();
             buildAnywaysProjects = getBuildAnywaysProjects(session, buildAnywaysPattern);
             useNativeGit = Boolean.valueOf(Property.useNativeGit.getValue());
+            disabledOnGoals = separatePattern(Property.disableOnGoal.getValue());
             rootDirectory = session.getExecutionRootDirectory();
         } catch (Exception e) {
             throw new RuntimeException(e);
