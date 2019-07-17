@@ -35,6 +35,7 @@ public class Configuration {
     public final boolean makeUpstream;
     public final boolean skipTestsForNotImpactedModules;
     public final boolean buildAll;
+    public final boolean buildChangedFirst;
     public final boolean compareToMergeBase;
     public final boolean fetchBaseBranch;
     public final boolean fetchReferenceBranch;
@@ -70,6 +71,7 @@ public class Configuration {
             untracked = Boolean.valueOf(Property.untracked.getValue());
             skipTestsForNotImpactedModules = Boolean.valueOf(Property.skipTestsForNotImpactedModules.getValue());
             buildAll = Boolean.valueOf(Property.buildAll.getValue());
+            buildChangedFirst = Boolean.valueOf(Property.buildChangedFirst.getValue());
             compareToMergeBase = Boolean.valueOf(Property.compareToMergeBase.getValue());
             fetchReferenceBranch = Boolean.valueOf(Property.fetchReferenceBranch.getValue());
             fetchBaseBranch = Boolean.valueOf(Property.fetchBaseBranch.getValue());
@@ -166,6 +168,7 @@ public class Configuration {
                         .append("makeUpstream", makeUpstream)
                         .append("skipTestsForNotImpactedModules", skipTestsForNotImpactedModules)
                         .append("buildAll", buildAll)
+                        .append("buildChangedFirst", buildChangedFirst)
                         .append("compareToMergeBase", compareToMergeBase)
                         .append("fetchBaseBranch", fetchBaseBranch)
                         .append("fetchReferenceBranch", fetchReferenceBranch)

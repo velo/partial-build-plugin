@@ -7,6 +7,7 @@ import static com.lesfurets.maven.partial.utils.DependencyUtils.getAllDependenci
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +35,30 @@ public class RebuildProjects {
         final Collection<MavenProject> changed = new ArrayList<>(changedProjects);
         changed.addAll(configuration.ignoredProjects);
         changed.addAll(configuration.buildAnywaysProjects);
+
+        Comparator<MavenProject> comparator;
+        if (configuration.buildChangedFirst)
+        {
+            logger.info("Sorting reactor so changed project are built first.");
+
+            comparator = (project1, project2) -> {
+                if (changedProjects.contains(project1)
+                    && changedProjects.contains(project2))
+                    // both projects are changed, keep order
+                    return 0;
+
+                if (changedProjects.contains(project1))
+                    return -1;
+                if (changedProjects.contains(project2))
+                    return 1;
+
+                return 0;
+            };
+        } else {
+            // do not reshuffle projects
+            comparator = (project1, project2) -> 0;
+        }
+
         if (!configuration.buildAll) {
             Collection<MavenProject> rebuildProjects = changed;
             if (configuration.makeUpstream) {
@@ -47,6 +72,7 @@ public class RebuildProjects {
             } else {
                 mavenSession.setProjects(mavenSession.getProjects().stream()
                                 .filter(rebuildProjects::contains)
+                                .sorted(comparator)
                                 .collect(Collectors.toList()));
             }
         } else {
@@ -56,6 +82,10 @@ public class RebuildProjects {
                                 this.ifSkipDependenciesTest(p);
                                 this.ifSkipDependenciesSonar(p);
                             });
+
+            mavenSession.setProjects(mavenSession.getProjects().stream()
+                .sorted(comparator)
+                .collect(Collectors.toList()));
         }
     }
 
