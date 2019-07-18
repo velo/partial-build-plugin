@@ -1,13 +1,13 @@
 language: java
+
+os:
+  - linux
+
 jdk:
   - oraclejdk8
+
+install:
+  - mvn install dependency:go-offline -Pskip-formatter -DskipTests=true -fn -q
+
 script:
-  mvn verify
-# safelist
-branches:
-  only:
-  - develop
-  - master
-  - /^feature_.*$/
-notifications:
-  email: false
+  - mvn clean install -Pci -B

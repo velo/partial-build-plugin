@@ -1,8 +1,11 @@
 # Partial Build Plugin
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.lesfurets/partial-build-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.lesfurets/partial-build-plugin)
-[![Build Status](https://travis-ci.org/lesfurets/partial-build-plugin.svg?branch=develop)](https://travis-ci.org/lesfurets/partial-build-plugin)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/lesfurets/partial-build-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/ozangunalp/partial-build-plugin)
+[![Build Status](https://travis-ci.org/${owner}/${name}.svg?branch=master)](https://travis-ci.org/${owner}/${name}?branch=master) 
+[![Coverage Status](https://coveralls.io/repos/github/${owner}/${name}/badge.svg?branch=master)](https://coveralls.io/github/${owner}/${name}?branch=master) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marvinformatics/${name}/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.marvinformatics/${name}/) 
+[![Issues](https://img.shields.io/github/issues/${owner}/${name}.svg)](https://github.com/${owner}/${name}/issues) 
+[![Forks](https://img.shields.io/github/forks/${owner}/${name}.svg)](https://github.com/${owner}/${name}/network) 
+[![Stars](https://img.shields.io/github/stars/${owner}/${name}.svg)](https://github.com/${owner}/${name}/stargazers)
 
 A maven plugin for partially building multi-module projects based on changes in the Git repository.
 
