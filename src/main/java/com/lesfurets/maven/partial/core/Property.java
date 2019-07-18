@@ -11,6 +11,7 @@ public enum Property {
     untracked("false"),
     skipTestsForNotImpactedModules("false"),
     buildAll("false"),
+    buildChangedFirst("false"),
     compareToMergeBase("true"),
     fetchBaseBranch("false"),
     fetchReferenceBranch("false"),
