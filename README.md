@@ -24,7 +24,7 @@ So be sure to add `<extensions>true</extensions>` in the plugin definition to en
 <build>
   <plugins>
     <plugin>
-      <groupId>com.lesfurets</groupId>
+      <groupId>com.marvinformatics</groupId>
       <artifactId>partial-build-plugin</artifactId>
       <version>VERSION</version>
       <extensions>true</extensions>
@@ -46,7 +46,7 @@ This will write the list of changed projects into the output file.
 <build>
   <plugins>
     <plugin>
-      <groupId>com.lesfurets</groupId>
+      <groupId>com.marvinformatics</groupId>
       <artifactId>partial-build-plugin</artifactId>
       <version>VERSION</version>
        <executions>
@@ -74,7 +74,7 @@ This will write the list of changed projects into the output file.
 <build>
   <plugins>
     <plugin>
-      <groupId>com.lesfurets</groupId>
+      <groupId>com.marvinformatics</groupId>
       <artifactId>partial-build-plugin</artifactId>
       <version>VERSION</version>
       <extensions>true</extensions>
@@ -83,8 +83,8 @@ This will write the list of changed projects into the output file.
           <buildAll>true</buildAll>
           <skipTestsForNotImpactedModules>true</skipTestsForNotImpactedModules>
           <ignoreChanged>
-            com.lesfurets:some-project,
-            com.lesfurets:other-project
+            com.marvinformatics:some-project,
+            com.marvinformatics:other-project
           </ignoreChanged>
        </configuration>
     </plugin>

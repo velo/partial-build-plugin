@@ -22,7 +22,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.lesfurets</groupId>
+        <groupId>com.marvinformatics</groupId>
         <artifactId>partial-build-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>

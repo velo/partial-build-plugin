@@ -308,34 +308,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.marvinformatics.formatter</groupId>
-            <artifactId>formatter-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>validate</id>
-                <goals>
-                  <goal>validate</goal>
-                </goals>
-                <phase>initialize</phase>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>com.github.ekryd.sortpom</groupId>
-            <artifactId>sortpom-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>validate</id>
-                <goals>
-                  <goal>verify</goal>
-                </goals>
-                <phase>initialize</phase>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
           </plugin>
@@ -352,23 +324,6 @@
                 <phase>initialize</phase>
               </execution>
             </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-
-      <id>skip-formatter</id>
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.marvinformatics.formatter</groupId>
-            <artifactId>formatter-maven-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
           </plugin>
         </plugins>
       </build>

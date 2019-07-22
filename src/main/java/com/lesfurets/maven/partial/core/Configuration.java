@@ -22,7 +22,7 @@ import com.google.inject.Singleton;
 @Singleton
 public class Configuration {
 
-    private static final String PLUGIN_KEY = "com.lesfurets:partial-build-plugin";
+    private static final String PLUGIN_KEY = "com.marvinformatics:partial-build-plugin";
 
     private static final String MAKE_UPSTREAM = "make-upstream";
 
