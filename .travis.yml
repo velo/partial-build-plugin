@@ -4,7 +4,7 @@ os:
   - linux
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 install:
   - mvn install dependency:go-offline -Pskip-formatter -DskipTests=true -fn -q
